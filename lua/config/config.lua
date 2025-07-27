@@ -28,8 +28,10 @@ vim.opt.ttimeoutlen = 0
 
 
 vim.api.nvim_create_autocmd("TermOpen", {
+    pattern = "*",
     group = vim.api.nvim_create_augroup("custom-term-open", {clear = true}),
     callback = function ()
+        vim.cmd("startinsert")
         vim.opt.number = false
     end
 })
