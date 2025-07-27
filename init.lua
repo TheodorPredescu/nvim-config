@@ -51,13 +51,36 @@ require("lazy").setup({
         config = function()
             local lspconfig = require("lspconfig")
             require("mason-lspconfig").setup({
-                ensure_installed = { "lua_ls", "pyright", "clangd" }, -- servers you want
+                ensure_installed = { "lua_ls", "pyright", "clangd", "angularls" }, -- servers you want
                 automatic_installation = true,
             })
             require("mason-lspconfig").setup({
                 function(server_name)
                     lspconfig[server_name].setup {}
-                end
+                end,
+                -- custom setup for angularls
+                ["angularls"] = function()
+                    local util = require("lspconfig.util")
+                    lspconfig.angularls.setup({
+                        cmd = { "ngserver", "--stdio" },
+                        root_dir = util.root_pattern("angular.json", "nx.json", "project.json", ".git"),
+                        on_new_config = function(new_config, new_root_dir)
+                            new_config.cmd = {
+                                "ngserver",
+                                "--stdio",
+                                "--tsProbeLocations",
+                                new_root_dir,
+                                "--ngProbeLocations",
+                                new_root_dir,
+                            }
+                        end,
+                    })
+                end,
+
+                -- custom setup for ts_ls (typescript server)
+                ["ts_ls"] = function()
+                    lspconfig.ts_ls.setup({})
+                end,
             })
 
             lspconfig.lua_ls.setup {
@@ -147,6 +170,7 @@ require("lazy").setup({
 
     --=============================================================================
     -- Colorscheme
+
     {
         "bluz71/vim-moonfly-colors",
         name = "moonfly",
