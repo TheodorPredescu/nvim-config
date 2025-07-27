@@ -26,4 +26,10 @@ vim.opt.updatetime = 300
 vim.opt.timeoutlen = 500
 vim.opt.ttimeoutlen = 0
 
--- vim.opt.textwidth = 80
+
+vim.api.nvim_create_autocmd("TermOpen", {
+    group = vim.api.nvim_create_augroup("custom-term-open", {clear = true}),
+    callback = function ()
+        vim.opt.number = false
+    end
+})

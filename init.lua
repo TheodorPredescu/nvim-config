@@ -1,5 +1,5 @@
-require("config.config")
-require("config.keymaps")
+vim.g.mapleader = " "
+vim.g.maplocalleader = " "
 
 -- Lazy config
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -37,7 +37,7 @@ require("lazy").setup({
 
   {
       "williamboman/mason-lspconfig.nvim",
-      dependencies = { 
+      dependencies = {
           "williamboman/mason.nvim",
           "neovim/nvim-lspconfig",
           'hrsh7th/cmp-nvim-lsp',
@@ -161,6 +161,15 @@ require("lazy").setup({
               check_ts = true,  -- enable Treesitter integration
           })
       end
+  },
+  {
+      "nvim-neo-tree/neo-tree.nvim",
+      branch = "v3.x",
+      dependencies = { "nvim-lua/plenary.nvim", "nvim-tree/nvim-web-devicons", "MunifTanjim/nui.nvim" },
+      config = function()
+          require("neo-tree").setup()
+          vim.keymap.set("n", "<leader>e", "<cmd>Neotree toggle<CR>", { desc = "Toggle Neo-tree" })
+      end
   }
 })
 
@@ -175,3 +184,6 @@ require('nvim-treesitter.configs').setup {
     -- disable = { "c", "rust" },
   },
 }
+
+require("config.config")
+require("config.keymaps")
