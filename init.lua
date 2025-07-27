@@ -199,7 +199,23 @@ require("lazy").setup({
         "ThePrimeagen/harpoon",
         branch = "harpoon2",
         dependencies = { "nvim-lua/plenary.nvim" }
-    }
+    },
+
+    --=============================================================================
+    {
+        "j-hui/fidget.nvim",
+        tag = "legacy", -- or omit for the latest rewrite
+        event = "LspAttach",
+        opts = {
+            text = {
+                spinner = "dots", -- animation style
+            },
+            window = {
+                blend = 0,
+                relative = "editor", -- "win" | "editor"
+            },
+        },
+}
 })
 
 require('nvim-treesitter.configs').setup {
