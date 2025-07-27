@@ -104,6 +104,25 @@ require("lazy").setup({
             })
         end
     },
+
+-- ------------------------------------------------------------------------------
+    {
+        'nvim-telescope/telescope-ui-select.nvim',
+        config = function()
+            require('telescope').setup {
+                extensions = {
+                    ["ui-select"] = {
+                        require("telescope.themes").get_dropdown {
+                            -- dropdown theme settings
+                            winblend = 10,
+                            previewer = false,
+                        }
+                    }
+                }
+            }
+            require("telescope").load_extension("ui-select")
+        end
+    },
 -- ------------------------------------------------------------------------------
     {
         -- Main LSP configuration

@@ -18,7 +18,7 @@ vim.keymap.set('n', '<leader>g', builtin.live_grep, { desc = "Live grep" })
 
 
 vim.keymap.set('t', '<Esc>', [[<C-\><C-n>]], { noremap = true, silent = true })
-vim.keymap.set("n", "<C-/>", function ()
+vim.keymap.set("n", "<leader>t", function ()
   local buf = vim.api.nvim_get_current_buf()
   local buftype = vim.api.nvim_buf_get_option(buf, "buftype")
   if buftype == "terminal" then
