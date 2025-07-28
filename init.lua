@@ -1,5 +1,6 @@
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
+vim.opt.termguicolors = true
 
 -- Lazy config
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -17,35 +18,39 @@ vim.opt.rtp:prepend(lazypath)
 
 -- Treesitter
 require("lazy").setup({
+    {
+        "gpanders/editorconfig.nvim",
+        lazy = false,
+    },
     --=============================================================================
     {
         "nvim-treesitter/nvim-treesitter",
-        branch = 'master',
+        branch = "master",
         lazy = false,
-        build = ":TSUpdate"
+        build = ":TSUpdate",
     },
 
--- ------------------------------------------------------------------------------
+    -- ------------------------------------------------------------------------------
     -- Mason
     {
         "mason-org/mason.nvim",
         build = ":MasonUpdate",
         config = function()
             require("mason").setup()
-        end
+        end,
     },
 
--- ------------------------------------------------------------------------------
+    -- ------------------------------------------------------------------------------
     {
         "williamboman/mason-lspconfig.nvim",
         dependencies = {
             "williamboman/mason.nvim",
             "neovim/nvim-lspconfig",
-            'hrsh7th/cmp-nvim-lsp',
-            'hrsh7th/cmp-buffer',
-            'hrsh7th/cmp-path',
-            'hrsh7th/cmp-cmdline',
-            'hrsh7th/nvim-cmp'
+            "hrsh7th/cmp-nvim-lsp",
+            "hrsh7th/cmp-buffer",
+            "hrsh7th/cmp-path",
+            "hrsh7th/cmp-cmdline",
+            "hrsh7th/nvim-cmp",
         },
 
         config = function()
@@ -56,7 +61,7 @@ require("lazy").setup({
             })
             require("mason-lspconfig").setup({
                 function(server_name)
-                    lspconfig[server_name].setup {}
+                    lspconfig[server_name].setup({})
                 end,
                 -- custom setup for angularls
                 ["angularls"] = function()
@@ -83,13 +88,13 @@ require("lazy").setup({
                 end,
             })
 
-            lspconfig.lua_ls.setup {
+            lspconfig.lua_ls.setup({
                 settings = {
                     Lua = {
                         diagnostics = { globals = { "vim" } },
                     },
                 },
-            }
+            })
 
             vim.diagnostic.config({
                 virtual_text = {
@@ -102,51 +107,51 @@ require("lazy").setup({
                 severity_sort = true,
             })
 
-            local cmp = require('cmp')
-            local cmp_select = {behavior = cmp.SelectBehavior.Select}
+            local cmp = require("cmp")
+            local cmp_select = { behavior = cmp.SelectBehavior.Select }
 
             local cmp_mappings = cmp.mapping.preset.insert({
-                ['<C-p>'] = cmp.mapping.select_prev_item(cmp_select),
-                ['<C-n>'] = cmp.mapping.select_next_item(cmp_select),
-                ['<CR>'] = cmp.mapping.confirm({ select = true }),
-                ['<C-Space>'] = cmp.mapping.complete(),
+                ["<C-p>"] = cmp.mapping.select_prev_item(cmp_select),
+                ["<C-n>"] = cmp.mapping.select_next_item(cmp_select),
+                ["<CR>"] = cmp.mapping.confirm({ select = true }),
+                ["<C-Space>"] = cmp.mapping.complete(),
             })
 
             -- Remove Tab mappings if you don’t want them
-            cmp_mappings['<Tab>'] = nil
-            cmp_mappings['<S-Tab>'] = nil
+            cmp_mappings["<Tab>"] = nil
+            cmp_mappings["<S-Tab>"] = nil
 
             cmp.setup({
                 mapping = cmp_mappings,
                 sources = cmp.config.sources({
-                    { name = 'nvim_lsp' },
-                    { name = 'buffer' },
-                    { name = 'path' },
-                    { name = 'luasnip' },
+                    { name = "nvim_lsp" },
+                    { name = "buffer" },
+                    { name = "path" },
+                    { name = "luasnip" },
                 }),
             })
-        end
+        end,
     },
 
--- ------------------------------------------------------------------------------
+    -- ------------------------------------------------------------------------------
     {
-        'nvim-telescope/telescope-ui-select.nvim',
+        "nvim-telescope/telescope-ui-select.nvim",
         config = function()
-            require('telescope').setup {
+            require("telescope").setup({
                 extensions = {
                     ["ui-select"] = {
-                        require("telescope.themes").get_dropdown {
+                        require("telescope.themes").get_dropdown({
                             -- dropdown theme settings
                             winblend = 10,
                             previewer = false,
-                        }
-                    }
-                }
-            }
+                        }),
+                    },
+                },
+            })
             require("telescope").load_extension("ui-select")
-        end
+        end,
     },
--- ------------------------------------------------------------------------------
+    -- ------------------------------------------------------------------------------
     {
         -- Main LSP configuration
         "neovim/nvim-lspconfig",
@@ -156,18 +161,58 @@ require("lazy").setup({
             vim.api.nvim_create_autocmd("LspAttach", {
 
                 callback = function(ev)
-                    local opts = {buffer = ev.buf, silent = true, noremap = true}
+                    local opts = { buffer = ev.buf, silent = true, noremap = true }
                     -- vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
                     -- vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
                     vim.keymap.set("n", "gd", "<cmd>Telescope lsp_definitions<CR>")
                     vim.keymap.set("n", "gr", "<cmd>Telescope lsp_references<CR>")
                     vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
                     vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
+
+                    local client = vim.lsp.get_client_by_id(ev.data.client_id)
+                    if not client then
+                        return
+                    end
+
+                    if client.supports_method("textDocument/formatting", 0) then
+                        vim.api.nvim_create_autocmd("BufWritePre", {
+                            buffer = ev.buf,
+                            callback = function()
+                                vim.lsp.buf.format({ bufnr = ev.buf, id = client.id })
+                            end,
+                        })
+                    end
                 end,
             })
-        end
+        end,
     },
 
+    --=============================================================================
+    {
+        "jay-babu/mason-null-ls.nvim",
+        event = { "BufReadPre", "BufNewFile" },
+        dependencies = { "williamboman/mason.nvim", "nvimtools/none-ls.nvim" },
+        config = function()
+            require("mason-null-ls").setup({
+                ensure_installed = {
+                    "black",
+                    "isort",
+                    "ruff",
+                    "prettier",
+                    "stylua",
+                },
+                automatic_installation = true,
+                handlers = {}, -- optional: leave empty to auto-setup everything
+            })
+        end,
+    },
+    {
+        "nvimtools/none-ls.nvim",
+        config = function()
+            local null_ls = require("null-ls")
+            null_ls.setup({})
+        end,
+    },
     --=============================================================================
     -- Colorscheme
 
@@ -187,13 +232,13 @@ require("lazy").setup({
         tag = "0.1.8",
         dependencies = { "nvim-lua/plenary.nvim" },
         config = function()
-            require('telescope').setup({
+            require("telescope").setup({
                 defaults = {
                     layout_strategy = "horizontal",
                     layout_config = { width = 0.9, height = 0.9 },
                 },
             })
-        end
+        end,
     },
 
     --=============================================================================
@@ -202,9 +247,9 @@ require("lazy").setup({
         event = "InsertEnter",
         config = function()
             require("nvim-autopairs").setup({
-                check_ts = true,  -- enable Treesitter integration
+                check_ts = true, -- enable Treesitter integration
             })
-        end
+        end,
     },
 
     --=============================================================================
@@ -215,14 +260,14 @@ require("lazy").setup({
         config = function()
             require("neo-tree").setup()
             vim.keymap.set("n", "<leader>e", "<cmd>Neotree toggle<CR>", { desc = "Toggle Neo-tree" })
-        end
+        end,
     },
 
     --=============================================================================
     {
         "ThePrimeagen/harpoon",
         branch = "harpoon2",
-        dependencies = { "nvim-lua/plenary.nvim" }
+        dependencies = { "nvim-lua/plenary.nvim" },
     },
 
     --=============================================================================
@@ -239,10 +284,10 @@ require("lazy").setup({
                 relative = "editor", -- "win" | "editor"
             },
         },
-}
+    },
 })
 
-require('nvim-treesitter.configs').setup {
+require("nvim-treesitter.configs").setup({
     ensure_installed = { "c", "lua", "vim", "vimdoc", "python", "markdown", "markdown_inline" },
 
     -- Install parsers synchronously (only applied to `ensure_installed`)
@@ -252,7 +297,8 @@ require('nvim-treesitter.configs').setup {
         enable = true,
         -- disable = { "c", "rust" },
     },
-}
+    additional_vim_regex_highlighting = false,
+})
 
 require("config.config")
 require("config.keymaps")
