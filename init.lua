@@ -266,11 +266,12 @@ local builtin = require('telescope.builtin')
 vim.keymap.set('n', '<leader>f', builtin.find_files, { desc = 'Telescope find files' })
 vim.keymap.set('n', '<leader>/', builtin.live_grep, { desc = 'Telescope live grep' })
 vim.keymap.set('n', '<leader>b', builtin.buffers, { desc = 'Telescope buffers' })
--- vim.keymap.set('n', '<leader>th', builtin.help_tags, { desc = 'Telescope help tags' })
-vim.keymap.set('n', 'gd', builtin.lsp_definitions, { desc = 'LSP Definitions' })
+-- vim.keymap.set('n', 'gd', builtin.lsp_definitions, { desc = 'LSP Definitions' })
 vim.keymap.set('n', '<leader>d', builtin.lsp_workspace_symbols, { desc = 'LSP Workspace Symbols' })
 vim.keymap.set('n', 'gr', builtin.lsp_references, { desc = "LSP references" })
 
+-- vim.keymap.set('n', '<leader>th', builtin.help_tags, { desc = 'Telescope help tags' })
+vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition" })
 
 
 -- harpoon2
