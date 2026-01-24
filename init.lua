@@ -16,7 +16,9 @@ vim.opt.autoindent = true
 vim.opt.smartindent = true
 
 vim.opt.scrolloff = 4
-vim.opt.wrap = false
+vim.opt.wrap = true
+vim.opt.textwidth = 120
+vim.opt.colorcolumn = "120"
 
 vim.opt.backup = false
 local swapDir = vim.fn.stdpath("state") .. '/swap'
@@ -38,11 +40,26 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
 -- Automatic putting pairs for each a 'opening' element
 vim.keymap.set('i', '(', '()<Left>')
-vim.keymap.set('i', '{', '{}<Left><CR><CR><Up>')
+vim.keymap.set('i', '{', '{}<Left>')
 vim.keymap.set('i', '[', '[]<Left>')
 vim.keymap.set('i', "'", "''<Left>")
 vim.keymap.set('i', '"', '""<Left>')
 vim.keymap.set('i', '`', '``<Left>')
+vim.keymap.set('i', '<CR>', function()
+    local col = vim.fn.col('.') - 1
+    local line = vim.fn.getline('.')
+
+    -- Check if cursor is between { and }
+    if col > 0 and line:sub(col, col) == '{' and line:sub(col + 1, col + 1) == '}' then
+        -- Insert two new lines and position cursor on the middle line
+        vim.api.nvim_feedkeys(
+            vim.api.nvim_replace_termcodes("<CR><CR><Esc>k==i", true, false, true), 'n', true
+        )
+        return ""
+    else
+        return "\n"
+    end
+end, { expr = true, noremap = true })
 
 
 --------------------------------- LAZY ---------------------------------
@@ -132,6 +149,26 @@ require("lazy").setup({
       })
     end
   },
+  {
+    "kdheepak/lazygit.nvim",
+    lazy = true,
+    cmd = {
+        "LazyGit",
+        "LazyGitConfig",
+        "LazyGitCurrentFile",
+        "LazyGitFilter",
+        "LazyGitFilterCurrentFile",
+    },
+    -- optional for floating window border decoration
+    dependencies = {
+        "nvim-lua/plenary.nvim",
+    },
+    -- setting the keybinding for LazyGit with 'keys' is recommended in
+    -- order to load the plugin when the command is run for the first time
+    keys = {
+        { "<leader>lg", "<cmd>LazyGit<cr>", desc = "LazyGit" }
+    }
+  }
 
 })
 
@@ -146,14 +183,6 @@ vim.diagnostic.config({
 vim.api.nvim_create_autocmd("LspAttach", {
     callback = function(args)
         local bufnr = args.buf
-        local opts = { noremap = true, silent = true }
-
-        -- helper to map buffer-local keys
-        local buf_set = vim.api.nvim_buf_set_keymap
-
-        -- buf_set(bufnr, 'n', 'gd', '<cmd>lua vim.lsp.buf.definition()<CR>', opts)
-        -- buf_set(bufnr, 'n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
-        -- buf_set(bufnr, 'n', '<leader>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
 
         vim.keymap.set("n", "gd", vim.lsp.buf.definition,
           { buffer = bufnr, silent = true, desc = "Go to definition" })
@@ -169,6 +198,8 @@ vim.api.nvim_create_autocmd("LspAttach", {
             border = "rounded",
           })
         end, { buffer = bufnr, silent = true, desc = "Signature help" })
+
+        vim.keymap.set("n", "gr", vim.lsp.buf.references, { buffer = bufnr, silent = true, desc = "Reference" })
 
         vim.keymap.set("n", "<leader>ca", function ()
             vim.lsp.buf.code_action({
