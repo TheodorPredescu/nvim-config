@@ -50,7 +50,15 @@ vim.keymap.set('i', '<CR>', function()
   local line = vim.fn.getline('.')
 
   -- Check if cursor is between { and }
-  if col > 0 and line:sub(col, col) == '{' and line:sub(col + 1, col + 1) == '}' then
+  if col <= 0 then
+    return "\n"
+  end
+  local first = line:sub(col, col);
+  local second = line:sub(col + 1, col + 1);
+  if (first == '(' and second == ')') or
+      (first == '[' and second == ']') or
+      (first == '{' and second == '}')
+  then
     -- Insert two new lines and position cursor on the middle line
     vim.api.nvim_feedkeys(
       vim.api.nvim_replace_termcodes("<CR><CR><Esc>k==i", true, false, true), 'n', true
