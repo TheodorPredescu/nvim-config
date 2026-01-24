@@ -226,9 +226,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
   callback = function(args)
     local bufnr = args.buf
 
-    -- vim.keymap.set("n", "gd", vim.lsp.buf.definition,
-    --   { buffer = bufnr, silent = true, desc = "Go to definition" })
-
     vim.keymap.set("n", "K", function()
         vim.lsp.buf.hover({
           border = "rounded" })
@@ -255,11 +252,10 @@ vim.api.nvim_create_autocmd("LspAttach", {
       { buffer = bufnr, silent = true, desc = "Code action" })
 
     -- Format on save
-    -- vim.api.nvim_create_autocmd("BufWritePre",
-    --   {
+    -- vim.api.nvim_create_autocmd("BufWritePre", {
     --     buffer = bufnr,
     --     callback = function()
-    --       vim.lsp.buf.format({ async = true })
+    --       vim.lsp.buf.format({ async = false })
     --     end,
     --   })
 
