@@ -293,3 +293,40 @@ vim.keymap.set("n", "<leader>4", function() harpoon:list():select(4) end)
 -- Toggle previous & next buffers stored within Harpoon list
 vim.keymap.set("n", "<leader>p", function() harpoon:list():prev() end)
 vim.keymap.set("n", "<leader>n", function() harpoon:list():next() end)
+
+
+-- Make toggle terminal on <leader> t with history preserved.
+local term_buf = nil
+local term_win = nil
+
+local function toggle_terminal()
+  if term_win and vim.api.nvim_win_is_valid(term_win) then
+    vim.api.nvim_win_hide(term_win)
+    term_win = nil
+    return
+  end
+
+  vim.cmd("botright split | resize 15")
+
+  if term_buf and vim.api.nvim_buf_is_valid(term_buf) then
+    vim.api.nvim_win_set_buf(0, term_buf)
+  else
+    vim.cmd("terminal")
+    term_buf = vim.api.nvim_get_current_buf()
+  end
+
+  term_win = vim.api.nvim_get_current_win()
+  vim.cmd("startinsert")
+end
+
+vim.keymap.set("t", "<C-n>", [[<C-\><C-n>]], { desc = "Exit terminal mode" })
+vim.keymap.set("n", "<leader>t", toggle_terminal, { desc = "Toggle terminal" })
+-- Bugs the lazygit interface. It acts like a terminal (its probably one in the backgroud).
+-- vim.keymap.set("t", "<leader>t", function()
+--   vim.api.nvim_feedkeys(
+--     vim.api.nvim_replace_termcodes("<C-\\><C-n>", true, false, true),
+--     "n",
+--     true
+--   )
+--   toggle_terminal()
+-- end, { desc = "Toggle terminal" })
