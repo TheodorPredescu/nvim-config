@@ -61,7 +61,7 @@ vim.keymap.set('i', '<CR>', function()
   then
     -- Insert two new lines and position cursor on the middle line
     vim.api.nvim_feedkeys(
-      vim.api.nvim_replace_termcodes("<CR><CR><Esc>k==i", true, false, true), 'n', true
+      vim.api.nvim_replace_termcodes("<CR><Esc>O", true, false, true), 'n', true
     )
     return ""
   else
@@ -120,7 +120,7 @@ require("lazy").setup({
       local mason_lsp = require("mason-lspconfig")
 
       mason_lsp.setup({
-        ensure_installed = { "pyright", "tsserver", "clangd", "lua_ls" }
+        ensure_installed = { "pyright", "clangd", "lua_ls" }
       })
     end
   },
@@ -229,6 +229,23 @@ require("lazy").setup({
     dependencies = { { "nvim-mini/mini.icons", opts = {} } },
     lazy = false,
 
+  },
+  {
+    "folke/persistence.nvim",
+    event = "BufReadPre",                     -- this will only start session saving when an actual file was opened
+    opts = {
+      dir = vim.fn.stdpath("data") .. "/sessions/", -- where session is saved
+      options = { "buffers", "curdir", "tabpages", "winsize" },
+      -- Only ever store the last session
+      pre_save = function()
+        -- Remove all other sessions in the dir so only one remains
+        local session_dir = vim.fn.stdpath("data") .. "/sessions/"
+        local files = vim.fn.globpath(session_dir, "*", 0, 1)
+        for _, f in ipairs(files) do
+          vim.fn.delete(f)
+        end
+      end,
+    }
   }
 })
 
@@ -277,11 +294,18 @@ vim.api.nvim_create_autocmd("LspAttach", {
     --     end,
     --   })
 
-    vim.keymap.set('n', '<leader>w', function() vim.lsp.buf.format({ async = true }) end,
+    vim.keymap.set('n', '<leader>w', function()
+        vim.lsp.buf.format({ async = true })
+        require("persistence").select()
+      end,
       { buffer = bufnr, desc = "Format buffer" })
   end
 })
 
+vim.keymap.set('n', '<leader>L', function()
+    require("persistence").load({ last = true, silent = true })
+  end,
+  { desc = "Format buffer" })
 
 -- Telescope commands
 local builtin = require('telescope.builtin')
