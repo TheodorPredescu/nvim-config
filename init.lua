@@ -191,6 +191,9 @@ require("lazy").setup({
           changedelete = { hl = "GitGutterChange", text = "~", numhl = "GitGutterChangeNr", linehl = "GitGutterChangeLn" },
         },
         current_line_blame = false, -- shows git blame for current line
+        watch_gitdir = {
+          follow_files = true
+        },
         sign_priority = 6,
         update_debounce = 100,
       })
@@ -232,18 +235,16 @@ require("lazy").setup({
   },
   {
     "folke/persistence.nvim",
-    event = "BufReadPre",                     -- this will only start session saving when an actual file was opened
+    event = "BufReadPre",                           -- this will only start session saving when an actual file was opened
     opts = {
-      dir = vim.fn.stdpath("data") .. "/sessions/", -- where session is saved
+      dir = vim.fn.stdpath("data") .. "/sessions/", -- where sessions are stored
       options = { "buffers", "curdir", "tabpages", "winsize" },
-      -- Only ever store the last session
+      autosave = true,                              -- automatically save sessions
+      autoload = true,                              -- automatically load last session on start
+      -- only keep one session, always overwrite
       pre_save = function()
-        -- Remove all other sessions in the dir so only one remains
-        local session_dir = vim.fn.stdpath("data") .. "/sessions/"
-        local files = vim.fn.globpath(session_dir, "*", 0, 1)
-        for _, f in ipairs(files) do
-          vim.fn.delete(f)
-        end
+        local last_session = vim.fn.stdpath("data") .. "/sessions/last_session.vim"
+        vim.fn.delete(last_session) -- delete previous one
       end,
     }
   }
@@ -296,7 +297,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 
     vim.keymap.set('n', '<leader>w', function()
         vim.lsp.buf.format({ async = true })
-        require("persistence").select()
+        require("persistence").save({ last = true, silent = true })
       end,
       { buffer = bufnr, desc = "Format buffer" })
   end
