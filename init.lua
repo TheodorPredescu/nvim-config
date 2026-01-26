@@ -4,13 +4,14 @@ vim.opt.ruler = true
 vim.opt.showmode = true
 vim.opt.hlsearch = true
 vim.opt.ignorecase = true
+-- vim.bo.fileformat = "dos" -- or unix
 
 -- tab to spaces
 vim.opt.expandtab = true
 vim.opt.smarttab = true
-vim.opt.softtabstop = 2
-vim.opt.tabstop = 2
-vim.opt.shiftwidth = 2
+vim.opt.softtabstop = 4
+vim.opt.tabstop = 4
+vim.opt.shiftwidth = 4
 
 vim.opt.autoindent = false
 vim.opt.smartindent = false
@@ -254,7 +255,8 @@ require("lazy").setup({
   build = ':TSUpdate',
     opts = {
 
-    ensure_installed = { "typescript", "javascript", "html", "css", "python" },
+    ensure_installed = { "typescript", "javascript", "html", "css", "python", "lua" },
+    auto_install = true,
     highlight = { enable = true },
     indent = { enable = true }, -- this handles Enter spacing/indent automatically
     }
