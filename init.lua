@@ -288,16 +288,16 @@ vim.api.nvim_create_autocmd("LspAttach", {
       { buffer = bufnr, silent = true, desc = "Code action" })
 
     -- Format on save
-    -- vim.api.nvim_create_autocmd("BufWritePre", {
-    --     buffer = bufnr,
-    --     callback = function()
-    --       vim.lsp.buf.format({ async = false })
-    --     end,
-    --   })
+    vim.api.nvim_create_autocmd("BufWritePre", {
+      buffer = bufnr,
+      callback = function()
+        -- vim.lsp.buf.format({ async = false })
+        require("persistence").save({ last = true, silent = true, async = false })
+      end,
+    })
 
     vim.keymap.set('n', '<leader>w', function()
         vim.lsp.buf.format({ async = true })
-        require("persistence").save({ last = true, silent = true })
       end,
       { buffer = bufnr, desc = "Format buffer" })
   end
