@@ -16,7 +16,7 @@ vim.opt.autoindent = true
 vim.opt.smartindent = true
 
 vim.opt.scrolloff = 4
-vim.opt.wrap = true
+vim.opt.wrap = false
 vim.opt.textwidth = 120
 vim.opt.colorcolumn = "120"
 
@@ -211,6 +211,24 @@ require("lazy").setup({
     "ThePrimeagen/harpoon",
     branch = "harpoon2",
     dependencies = { "nvim-lua/plenary.nvim" }
+  },
+  {
+    'stevearc/oil.nvim',
+    ---@module 'oil'
+    ---@diagnostic disable-next-line: undefined-doc-name
+    ---@type oil.SetupOpts
+    opts = {
+      view_options = {
+        show_hidden = true,
+      },
+      keymaps = {
+        ["<C-c>"] = false,
+      }
+    },
+    -- Optional dependencies
+    dependencies = { { "nvim-mini/mini.icons", opts = {} } },
+    lazy = false,
+
   }
 })
 
@@ -319,6 +337,7 @@ local function toggle_terminal()
   vim.cmd("startinsert")
 end
 
+vim.keymap.set("n", "<leader>o", ":Oil<CR>", { desc = "Exit terminal mode" })
 vim.keymap.set("t", "<C-n>", [[<C-\><C-n>]], { desc = "Exit terminal mode" })
 vim.keymap.set("n", "<leader>t", toggle_terminal, { desc = "Toggle terminal" })
 -- Bugs the lazygit interface. It acts like a terminal (its probably one in the backgroud).
