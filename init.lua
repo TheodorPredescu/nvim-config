@@ -12,8 +12,8 @@ vim.opt.softtabstop = 2
 vim.opt.tabstop = 2
 vim.opt.shiftwidth = 2
 
-vim.opt.autoindent = true
-vim.opt.smartindent = true
+vim.opt.autoindent = false
+vim.opt.smartindent = false
 
 vim.opt.scrolloff = 4
 vim.opt.wrap = false
@@ -247,6 +247,17 @@ require("lazy").setup({
         vim.fn.delete(last_session) -- delete previous one
       end,
     }
+  },
+  {
+  'nvim-treesitter/nvim-treesitter',
+  lazy = false,
+  build = ':TSUpdate',
+    opts = {
+
+    ensure_installed = { "typescript", "javascript", "html", "css", "python" },
+    highlight = { enable = true },
+    indent = { enable = true }, -- this handles Enter spacing/indent automatically
+    }
   }
 })
 
@@ -292,7 +303,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
       buffer = bufnr,
       callback = function()
         -- vim.lsp.buf.format({ async = false })
-        require("persistence").save({ last = true, silent = true, async = false })
+        require("persistence").save({ last = true, silent = true, async = true })
       end,
     })
 
