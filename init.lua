@@ -47,27 +47,27 @@ vim.keymap.set('i', "'", "''<Left>")
 vim.keymap.set('i', '"', '""<Left>')
 vim.keymap.set('i', '`', '``<Left>')
 vim.keymap.set('i', '<CR>', function()
-  local col = vim.fn.col('.') - 1
-  local line = vim.fn.getline('.')
+    local col = vim.fn.col('.') - 1
+    local line = vim.fn.getline('.')
 
-  -- Check if cursor is between { and }
-  if col <= 0 then
-    return "\n"
-  end
-  local first = line:sub(col, col);
-  local second = line:sub(col + 1, col + 1);
-  if (first == '(' and second == ')') or
-      (first == '[' and second == ']') or
-      (first == '{' and second == '}')
-  then
-    -- Insert two new lines and position cursor on the middle line
-    vim.api.nvim_feedkeys(
-      vim.api.nvim_replace_termcodes("<CR><Esc>O", true, false, true), 'n', true
-    )
-    return ""
-  else
-    return "\n"
-  end
+    -- Check if cursor is between { and }
+    if col <= 0 then
+        return "\n"
+    end
+    local first = line:sub(col, col);
+    local second = line:sub(col + 1, col + 1);
+    if (first == '(' and second == ')') or
+        (first == '[' and second == ']') or
+        (first == '{' and second == '}')
+    then
+        -- Insert two new lines and position cursor on the middle line
+        vim.api.nvim_feedkeys(
+            vim.api.nvim_replace_termcodes("<CR><Esc>O", true, false, true), 'n', true
+        )
+        return ""
+    else
+        return "\n"
+    end
 end, { expr = true, noremap = true })
 
 
@@ -75,251 +75,264 @@ end, { expr = true, noremap = true })
 -- Bootstrap lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
-  local lazyrepo = "https://github.com/folke/lazy.nvim.git"
-  local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
-  if vim.v.shell_error ~= 0 then
-    vim.api.nvim_echo({
-      { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
-      { out,                            "WarningMsg" },
-      { "\nPress any key to exit..." },
-    }, true, {})
-    vim.fn.getchar()
-    os.exit(1)
-  end
+    local lazyrepo = "https://github.com/folke/lazy.nvim.git"
+    local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
+    if vim.v.shell_error ~= 0 then
+        vim.api.nvim_echo({
+            { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
+            { out,                            "WarningMsg" },
+            { "\nPress any key to exit..." },
+        }, true, {})
+        vim.fn.getchar()
+        os.exit(1)
+    end
 end
 vim.opt.rtp:prepend(lazypath)
 
 -- Setup lazy.nvim
 require("lazy").setup({
-  {
-    "folke/tokyonight.nvim",
-    lazy = false,    -- make sure we load this during startup if it is your main colorscheme
-    priority = 1000, -- make sure to load this before all the other start plugins
-    config = function()
-      require("tokyonight").setup({
-        styles = {
-          floats = "transparent", -- or "dark"
-        },
-      })
-      -- load the colorscheme here
-      vim.cmd([[colorscheme tokyonight-night]])
-    end,
-  },
-  -- Mason (manages LSP binaries)
-  {
-    "williamboman/mason.nvim",
-    config = function()
-      require("mason").setup()
-    end
-  },
-
-  -- Mason LSP integration
-  {
-    "williamboman/mason-lspconfig.nvim",
-    dependencies = { "williamboman/mason.nvim", "neovim/nvim-lspconfig" },
-    config = function()
-      local mason_lsp = require("mason-lspconfig")
-
-      mason_lsp.setup({
-        ensure_installed = { "pyright", "clangd", "lua_ls" }
-      })
-    end
-  },
-
-  -- Autocompletion
-  {
-    "hrsh7th/nvim-cmp",
-    dependencies = { "hrsh7th/cmp-nvim-lsp" },
-    config = function()
-      local cmp = require("cmp")
-      cmp.setup({
-        completion = { autocomplete = { require("cmp.types").cmp.TriggerEvent.TextChanged } },
-        window = {
-          completion = {
-            max_height = 10,    -- max number of entries shown
-            max_width = 50,     -- max width in characters
-            border = "rounded", -- optional but nice
-            winhighlight = "Normal:NormalFloat,FloatBorder:FloatBorder,CursorLine:PmenuSel,Search:None",
-          },
-          documentation = {
-            max_height = 15,
-            max_width = 60,
-            border = "rounded",
-            winhighlight = "Normal:NormalFloat,FloatBorder:FloatBorder",
-          },
-        },
-        mapping = {
-          ["<C-n>"] = cmp.mapping.select_next_item(),
-          ["<C-p>"] = cmp.mapping.select_prev_item(),
-          ["<CR>"] = cmp.mapping.confirm({ select = true }),
-          ["<C-y>"] = cmp.mapping.confirm({ select = true }),
-        },
-        sources = { { name = "nvim_lsp" } },
-      })
-    end
-  },
-  {
-    "kdheepak/lazygit.nvim",
-    lazy = true,
-    cmd = {
-      "LazyGit",
-      "LazyGitConfig",
-      "LazyGitCurrentFile",
-      "LazyGitFilter",
-      "LazyGitFilterCurrentFile",
+    {
+        "folke/tokyonight.nvim",
+        lazy = false,
+        priority = 1000,
+        config = function()
+            require("tokyonight").setup({
+                styles = {
+                    floats = "transparent",
+                },
+            })
+            -- load the colorscheme here
+            vim.cmd([[colorscheme tokyonight-night]])
+        end,
     },
-    -- optional for floating window border decoration
-    dependencies = {
-      "nvim-lua/plenary.nvim",
+    -- Mason (manages LSP binaries)
+    {
+        "williamboman/mason.nvim",
+        config = function()
+            require("mason").setup()
+        end
     },
-    -- setting the keybinding for LazyGit with 'keys' is recommended in
-    -- order to load the plugin when the command is run for the first time
-    keys = {
-      { "<leader>lg", "<cmd>LazyGit<cr>", desc = "LazyGit" }
-    }
-  },
-  {
-    "lewis6991/gitsigns.nvim",
-    event = "BufReadPre", -- load when a buffer is opened
-    dependencies = { "nvim-lua/plenary.nvim" },
-    config = function()
-      require("gitsigns").setup({
-        signs = {
-          add          = { hl = "GitGutterAdd", text = "│", numhl = "GitGutterAddNr", linehl = "GitGutterAddLn" },
-          change       = { hl = "GitGutterChange", text = "│", numhl = "GitGutterChangeNr", linehl = "GitGutterChangeLn" },
-          delete       = { hl = "GitGutterDelete", text = "_", numhl = "GitGutterDeleteNr", linehl = "GitGutterDeleteLn" },
-          topdelete    = { hl = "GitGutterDelete", text = "‾", numhl = "GitGutterDeleteNr", linehl = "GitGutterDeleteLn" },
-          changedelete = { hl = "GitGutterChange", text = "~", numhl = "GitGutterChangeNr", linehl = "GitGutterChangeLn" },
-        },
-        current_line_blame = false, -- shows git blame for current line
-        watch_gitdir = {
-          follow_files = true
-        },
-        sign_priority = 6,
-        update_debounce = 100,
-      })
-    end
-  },
 
-  -- Fuzzy finder and live grep with telescome
-  {
-    'nvim-telescope/telescope.nvim',
-    version = '*',
-    dependencies = {
-      'nvim-lua/plenary.nvim',
-      -- optional but recommended
-      { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
-    }
-  },
-  {
-    "ThePrimeagen/harpoon",
-    branch = "harpoon2",
-    dependencies = { "nvim-lua/plenary.nvim" }
-  },
-  {
-    'stevearc/oil.nvim',
-    ---@module 'oil'
-    ---@diagnostic disable-next-line: undefined-doc-name
-    ---@type oil.SetupOpts
-    opts = {
-      view_options = {
-        show_hidden = true,
-      },
-      keymaps = {
-        ["<C-c>"] = false,
-      }
+    -- Mason LSP integration
+    {
+        "williamboman/mason-lspconfig.nvim",
+        dependencies = { "williamboman/mason.nvim", "neovim/nvim-lspconfig" },
+        config = function()
+            local mason_lsp = require("mason-lspconfig")
+
+            mason_lsp.setup({
+                ensure_installed = { "pyright", "clangd", "lua_ls" }
+            })
+        end
     },
-    -- Optional dependencies
-    dependencies = { { "nvim-mini/mini.icons", opts = {} } },
-    lazy = false,
 
-  },
-  {
-    "folke/persistence.nvim",
-    event = "BufReadPre",                           -- this will only start session saving when an actual file was opened
-    opts = {
-      dir = vim.fn.stdpath("data") .. "/sessions/", -- where sessions are stored
-      options = { "buffers", "curdir", "tabpages", "winsize" },
-      autosave = true,                              -- automatically save sessions
-      autoload = true,                              -- automatically load last session on start
-      -- only keep one session, always overwrite
-      pre_save = function()
-        local last_session = vim.fn.stdpath("data") .. "/sessions/last_session.vim"
-        vim.fn.delete(last_session) -- delete previous one
-      end,
-    }
-  },
-  {
-  'nvim-treesitter/nvim-treesitter',
-  lazy = false,
-  build = ':TSUpdate',
-    opts = {
+    -- Autocompletion
+    {
+        "hrsh7th/nvim-cmp",
+        dependencies = { "hrsh7th/cmp-nvim-lsp" },
+        config = function()
+            local cmp = require("cmp")
+            cmp.setup({
+                completion = { autocomplete = { require("cmp.types").cmp.TriggerEvent.TextChanged } },
+                window = {
+                    completion = {
+                        max_height = 10,    -- max number of entries shown
+                        max_width = 50,     -- max width in characters
+                        border = "rounded", -- optional but nice
+                        winhighlight = "Normal:NormalFloat,FloatBorder:FloatBorder,CursorLine:PmenuSel,Search:None",
+                    },
+                    documentation = {
+                        max_height = 15,
+                        max_width = 60,
+                        border = "rounded",
+                        winhighlight = "Normal:NormalFloat,FloatBorder:FloatBorder",
+                    },
+                },
+                mapping = {
+                    ["<C-n>"] = cmp.mapping.select_next_item(),
+                    ["<C-p>"] = cmp.mapping.select_prev_item(),
+                    ["<CR>"] = cmp.mapping.confirm({ select = true }),
+                    ["<C-y>"] = cmp.mapping.confirm({ select = true }),
+                },
+                sources = { { name = "nvim_lsp" } },
+            })
+        end
+    },
+    {
+        "kdheepak/lazygit.nvim",
+        lazy = true,
+        cmd = {
+            "LazyGit",
+            "LazyGitConfig",
+            "LazyGitCurrentFile",
+            "LazyGitFilter",
+            "LazyGitFilterCurrentFile",
+        },
+        -- optional for floating window border decoration
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+        },
+        -- setting the keybinding for LazyGit with 'keys' is recommended in
+        -- order to load the plugin when the command is run for the first time
+        keys = {
+            { "<leader>lg", "<cmd>LazyGit<cr>", desc = "LazyGit" }
+        }
+    },
+    {
+        "lewis6991/gitsigns.nvim",
+        event = "BufReadPre", -- load when a buffer is opened
+        dependencies = { "nvim-lua/plenary.nvim" },
+        config = function()
+            require("gitsigns").setup({
+                signs = {
+                    add          = { hl = "GitGutterAdd", text = "│", numhl = "GitGutterAddNr", linehl = "GitGutterAddLn" },
+                    change       = { hl = "GitGutterChange", text = "│", numhl = "GitGutterChangeNr", linehl = "GitGutterChangeLn" },
+                    delete       = { hl = "GitGutterDelete", text = "_", numhl = "GitGutterDeleteNr", linehl = "GitGutterDeleteLn" },
+                    topdelete    = { hl = "GitGutterDelete", text = "‾", numhl = "GitGutterDeleteNr", linehl = "GitGutterDeleteLn" },
+                    changedelete = { hl = "GitGutterChange", text = "~", numhl = "GitGutterChangeNr", linehl = "GitGutterChangeLn" },
+                },
+                current_line_blame = false, -- shows git blame for current line
+                watch_gitdir = {
+                    follow_files = true
+                },
+                sign_priority = 6,
+                update_debounce = 100,
+            })
+        end
+    },
 
-    ensure_installed = { "typescript", "javascript", "html", "css", "python", "lua" },
-    auto_install = true,
-    highlight = { enable = true },
-    indent = { enable = true }, -- this handles Enter spacing/indent automatically
+    -- Fuzzy finder and live grep with telescome
+    {
+        'nvim-telescope/telescope.nvim',
+        version = '*',
+        dependencies = {
+            'nvim-lua/plenary.nvim',
+            -- optional but recommended
+            { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
+        }
+    },
+    {
+        'nvim-telescope/telescope-ui-select.nvim',
+        config = function()
+            require("telescope").setup ({
+                extensions = {
+                    ["ui-select"] = {
+                        require("telescope.themes").get_dropdown {}
+                    }
+                }
+            })
+        require("telescope").load_extension("ui-select")
+        end
+    },
+    {
+        "ThePrimeagen/harpoon",
+        branch = "harpoon2",
+        dependencies = { "nvim-lua/plenary.nvim" }
+    },
+    {
+        'stevearc/oil.nvim',
+        ---@module 'oil'
+        ---@diagnostic disable-next-line: undefined-doc-name
+        ---@type oil.SetupOpts
+        opts = {
+            view_options = {
+                show_hidden = true,
+            },
+            keymaps = {
+                ["<C-c>"] = false,
+            }
+        },
+        -- Optional dependencies
+        dependencies = { { "nvim-mini/mini.icons", opts = {} } },
+        lazy = false,
+
+    },
+    {
+        "folke/persistence.nvim",
+        event = "BufReadPre",                             -- this will only start session saving when an actual file was opened
+        opts = {
+            dir = vim.fn.stdpath("data") .. "/sessions/", -- where sessions are stored
+            options = { "buffers", "curdir", "tabpages", "winsize" },
+            autosave = true,                              -- automatically save sessions
+            autoload = true,                              -- automatically load last session on start
+            -- only keep one session, always overwrite
+            pre_save = function()
+                local last_session = vim.fn.stdpath("data") .. "/sessions/last_session.vim"
+                vim.fn.delete(last_session) -- delete previous one
+            end,
+        }
+    },
+    {
+        'nvim-treesitter/nvim-treesitter',
+        lazy = false,
+        build = ':TSUpdate',
+        opts = {
+
+            ensure_installed = { "typescript", "javascript", "html", "css", "python", "lua" },
+            auto_install = true,
+            highlight = { enable = true },
+            indent = { enable = true }, -- this handles Enter spacing/indent automatically
+        }
     }
-  }
 })
 
 vim.diagnostic.config({
-  virtual_text = true, -- inline errors/warnings
-  signs = true,        -- gutter icons
-  underline = true,
-  update_in_insert = false,
+    virtual_text = true, -- inline errors/warnings
+    signs = true,        -- gutter icons
+    underline = true,
+    update_in_insert = false,
 })
 
 -- Set buffer-local LSP keymaps dynamically when any LSP attaches
 vim.api.nvim_create_autocmd("LspAttach", {
-  callback = function(args)
-    local bufnr = args.buf
+    callback = function(args)
+        local bufnr = args.buf
 
-    vim.keymap.set("n", "K", function()
-        vim.lsp.buf.hover({
-          border = "rounded" })
-      end,
-      { buffer = bufnr, silent = true, desc = "Hover" })
+        vim.keymap.set("n", "K", function()
+                vim.lsp.buf.hover({
+                    border = "rounded" })
+            end,
+            { buffer = bufnr, silent = true, desc = "Hover" })
 
-    vim.keymap.set("n", "<C-k>", function()
-      vim.lsp.buf.signature_help({
-        border = "rounded",
-      })
-    end, { buffer = bufnr, silent = true, desc = "Signature help" })
+        vim.keymap.set("n", "<C-k>", function()
+            vim.lsp.buf.signature_help({
+                border = "rounded",
+            })
+        end, { buffer = bufnr, silent = true, desc = "Signature help" })
 
-    -- vim.keymap.set("n", "gr", vim.lsp.buf.references, { buffer = bufnr, silent = true, desc = "Reference" })
+        -- vim.keymap.set("n", "gr", vim.lsp.buf.references, { buffer = bufnr, silent = true, desc = "Reference" })
 
-    vim.keymap.set("n", "<leader>ca", function()
-        vim.lsp.buf.code_action({
-          window = {
-            border = "rounded",
-            row = 1,
-            col = vim.o.columns / 2,
-          }
+        vim.keymap.set("n", "<leader>ca", function()
+                vim.lsp.buf.code_action({
+                    window = {
+                        border = "rounded",
+                        row = 1,
+                        col = vim.o.columns / 2,
+                    }
+                })
+            end,
+            { buffer = bufnr, silent = true, desc = "Code action" })
+
+        -- Format on save
+        vim.api.nvim_create_autocmd("BufWritePre", {
+            buffer = bufnr,
+            callback = function()
+                -- vim.lsp.buf.format({ async = false })
+                require("persistence").save({ last = true, silent = true, async = true })
+            end,
         })
-      end,
-      { buffer = bufnr, silent = true, desc = "Code action" })
 
-    -- Format on save
-    vim.api.nvim_create_autocmd("BufWritePre", {
-      buffer = bufnr,
-      callback = function()
-        -- vim.lsp.buf.format({ async = false })
-        require("persistence").save({ last = true, silent = true, async = true })
-      end,
-    })
-
-    vim.keymap.set('n', '<leader>w', function()
-        vim.lsp.buf.format({ async = true })
-      end,
-      { buffer = bufnr, desc = "Format buffer" })
-  end
+        vim.keymap.set('n', '<leader>w', function()
+                vim.lsp.buf.format({ async = true })
+            end,
+            { buffer = bufnr, desc = "Format buffer" })
+    end
 })
 
 vim.keymap.set('n', '<leader>L', function()
-    require("persistence").load({ last = true, silent = true })
-  end,
-  { desc = "Format buffer" })
+        require("persistence").load({ last = true, silent = true })
+    end,
+    { desc = "Format buffer" })
 
 -- Telescope commands
 local builtin = require('telescope.builtin')
@@ -356,23 +369,23 @@ local term_buf = nil
 local term_win = nil
 
 local function toggle_terminal()
-  if term_win and vim.api.nvim_win_is_valid(term_win) then
-    vim.api.nvim_win_hide(term_win)
-    term_win = nil
-    return
-  end
+    if term_win and vim.api.nvim_win_is_valid(term_win) then
+        vim.api.nvim_win_hide(term_win)
+        term_win = nil
+        return
+    end
 
-  vim.cmd("botright split | resize 15")
+    vim.cmd("botright split | resize 15")
 
-  if term_buf and vim.api.nvim_buf_is_valid(term_buf) then
-    vim.api.nvim_win_set_buf(0, term_buf)
-  else
-    vim.cmd("terminal")
-    term_buf = vim.api.nvim_get_current_buf()
-  end
+    if term_buf and vim.api.nvim_buf_is_valid(term_buf) then
+        vim.api.nvim_win_set_buf(0, term_buf)
+    else
+        vim.cmd("terminal")
+        term_buf = vim.api.nvim_get_current_buf()
+    end
 
-  term_win = vim.api.nvim_get_current_win()
-  vim.cmd("startinsert")
+    term_win = vim.api.nvim_get_current_win()
+    vim.cmd("startinsert")
 end
 
 vim.keymap.set("n", "<leader>o", ":Oil<CR>", { desc = "Exit terminal mode" })
