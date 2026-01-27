@@ -124,9 +124,12 @@ require("lazy").setup({
                 ensure_installed = { "pyright", "clangd", "lua_ls" }
             })
 
-            vim.lsp.config.html = {
-                filetypes = { 'html', 'htmlangular'}
-            }
+            -- The html lsp used in vscode does not check for htmlangular files, but only for html.
+            if vim.lsp.config.html then
+                vim.lsp.config.html = {
+                    filetypes = { 'html', 'htmlangular' }
+                }
+            end
         end
     },
 
