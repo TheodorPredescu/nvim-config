@@ -123,6 +123,10 @@ require("lazy").setup({
             mason_lsp.setup({
                 ensure_installed = { "pyright", "clangd", "lua_ls" }
             })
+
+            vim.lsp.config.html = {
+                filetypes = { 'html', 'html.angular'}
+            }
         end
     },
 
@@ -324,7 +328,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
         vim.api.nvim_create_autocmd("BufWritePost", {
             buffer = bufnr,
             callback = function()
-                -- vim.lsp.buf.format({ async = false })
                 require("persistence").save({ last = true, silent = true })
             end,
         })
@@ -407,4 +410,3 @@ vim.keymap.set("n", "<leader>t", toggle_terminal, { desc = "Toggle terminal" })
 --   )
 --   toggle_terminal()
 -- end, { desc = "Toggle terminal" })
-
