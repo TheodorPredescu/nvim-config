@@ -314,12 +314,12 @@ vim.api.nvim_create_autocmd("LspAttach", {
             { buffer = bufnr, silent = true, desc = "Code action" })
 
         -- Format on save
-        vim.api.nvim_create_autocmd("BufWritePre", {
-            buffer = bufnr,
-            callback = function()
-                vim.lsp.buf.format({ async = false })
-            end,
-        })
+        -- vim.api.nvim_create_autocmd("BufWritePre", {
+        --     buffer = bufnr,
+        --     callback = function()
+        --         vim.lsp.buf.format({ async = false })
+        --     end,
+        -- })
 
         vim.api.nvim_create_autocmd("BufWritePost", {
             buffer = bufnr,
@@ -407,3 +407,4 @@ vim.keymap.set("n", "<leader>t", toggle_terminal, { desc = "Toggle terminal" })
 --   )
 --   toggle_terminal()
 -- end, { desc = "Toggle terminal" })
+
