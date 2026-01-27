@@ -125,7 +125,7 @@ require("lazy").setup({
             })
 
             vim.lsp.config.html = {
-                filetypes = { 'html', 'html.angular'}
+                filetypes = { 'html', 'htmlangular'}
             }
         end
     },
