@@ -13,7 +13,7 @@ vim.opt.softtabstop = 4
 vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
 
-vim.opt.autoindent = false
+vim.opt.autoindent = true
 vim.opt.smartindent = false
 
 vim.opt.scrolloff = 4
@@ -46,29 +46,29 @@ vim.keymap.set('i', '[', '[]<Left>')
 vim.keymap.set('i', "'", "''<Left>")
 vim.keymap.set('i', '"', '""<Left>')
 vim.keymap.set('i', '`', '``<Left>')
-vim.keymap.set('i', '<CR>', function()
-    local col = vim.fn.col('.') - 1
-    local line = vim.fn.getline('.')
-
-    -- Check if cursor is between { and }
-    if col <= 0 then
-        return "\n"
-    end
-    local first = line:sub(col, col);
-    local second = line:sub(col + 1, col + 1);
-    if (first == '(' and second == ')') or
-        (first == '[' and second == ']') or
-        (first == '{' and second == '}')
-    then
-        -- Insert two new lines and position cursor on the middle line
-        vim.api.nvim_feedkeys(
-            vim.api.nvim_replace_termcodes("<CR><Esc>O", true, false, true), 'n', true
-        )
-        return ""
-    else
-        return "\n"
-    end
-end, { expr = true, noremap = true })
+-- vim.keymap.set('i', '<CR>', function()
+--     local col = vim.fn.col('.') - 1
+--     local line = vim.fn.getline('.')
+--
+--     -- Check if cursor is between { and }
+--     if col <= 0 then
+--         return "\n"
+--     end
+--     local first = line:sub(col, col);
+--     local second = line:sub(col + 1, col + 1);
+--     if (first == '(' and second == ')') or
+--         (first == '[' and second == ']') or
+--         (first == '{' and second == '}')
+--     then
+--         -- Insert two new lines and position cursor on the middle line
+--         vim.api.nvim_feedkeys(
+--             vim.api.nvim_replace_termcodes("<CR><Esc>O", true, false, true), 'n', true
+--         )
+--         return ""
+--     else
+--         return "\n"
+--     end
+-- end, { expr = true, noremap = true })
 
 
 --------------------------------- LAZY ---------------------------------
@@ -214,14 +214,14 @@ require("lazy").setup({
     {
         'nvim-telescope/telescope-ui-select.nvim',
         config = function()
-            require("telescope").setup ({
+            require("telescope").setup({
                 extensions = {
                     ["ui-select"] = {
                         require("telescope.themes").get_dropdown {}
                     }
                 }
             })
-        require("telescope").load_extension("ui-select")
+            require("telescope").load_extension("ui-select")
         end
     },
     {
@@ -280,7 +280,7 @@ vim.diagnostic.config({
     virtual_text = true, -- inline errors/warnings
     signs = true,        -- gutter icons
     underline = true,
-    update_in_insert = false,
+    update_in_insert = true,
 })
 
 -- Set buffer-local LSP keymaps dynamically when any LSP attaches
@@ -317,8 +317,15 @@ vim.api.nvim_create_autocmd("LspAttach", {
         vim.api.nvim_create_autocmd("BufWritePre", {
             buffer = bufnr,
             callback = function()
+                vim.lsp.buf.format({ async = false })
+            end,
+        })
+
+        vim.api.nvim_create_autocmd("BufWritePost", {
+            buffer = bufnr,
+            callback = function()
                 -- vim.lsp.buf.format({ async = false })
-                require("persistence").save({ last = true, silent = true, async = true })
+                require("persistence").save({ last = true, silent = true })
             end,
         })
 
