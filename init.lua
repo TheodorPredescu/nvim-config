@@ -280,8 +280,30 @@ require("lazy").setup({
             highlight = { enable = true },
             indent = { enable = true }, -- this handles Enter spacing/indent automatically
         }
-    }
+    },
+    {
+        "kshenoy/vim-signature",
+        config = function()
+            vim.g.SignatureMarkText = "⚑" -- mark symbol
+            vim.g.SignatureColumnWidth = 2
+        end
+
+    },
 })
+
+
+
+-- ========================================================================== --
+------------------------------- End of require ---------------------------------
+-- ========================================================================== --
+
+-- Some color costumization for vim marks
+-- Normal marks '
+vim.api.nvim_set_hl(0, "SignatureMarkText", { fg = "#00ff00", bg = "NONE", bold = false })
+-- Uppercase marks (A-Z)
+vim.api.nvim_set_hl(0, "SignatureMarkTextUpper", { fg = "#00ff00", bg = "NONE", bold = false })
+-- Marks in the current line
+vim.api.nvim_set_hl(0, "SignatureMarkCurrentLine", { fg = "#ff00ff", bg = "NONE", bold = false })
 
 vim.diagnostic.config({
     virtual_text = true, -- inline errors/warnings
@@ -355,10 +377,17 @@ vim.keymap.set('n', '<leader>b', builtin.buffers, { desc = 'Telescope buffers' }
 -- vim.keymap.set('n', 'gd', builtin.lsp_definitions, { desc = 'LSP Definitions' })
 vim.keymap.set('n', '<leader>d', builtin.lsp_workspace_symbols, { desc = 'LSP Workspace Symbols' })
 vim.keymap.set('n', 'gr', builtin.lsp_references, { desc = "LSP references" })
+vim.keymap.set('n', 'gi', builtin.lsp_implementations, { desc = "LSP implementation" })
 
 -- vim.keymap.set('n', '<leader>th', builtin.help_tags, { desc = 'Telescope help tags' })
 vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition" })
 
+-- It will help when I have errors in a big file and dont whant to scroll to them.
+vim.keymap.set("n", "<leader>e", builtin.diagnostics, { desc = "Diagnostics" })
+
+-- Search for searching by name important components from this file (like functions, classes, class parameters). It will
+-- not search for function variables and stuff like that.
+vim.keymap.set( "n", "<leader>ds", builtin.lsp_document_symbols, { desc = "Document symbols" })
 
 -- harpoon2
 local harpoon = require("harpoon")
@@ -405,12 +434,3 @@ vim.keymap.set("n", "<leader>o", ":Oil<CR>", { desc = "Exit terminal mode" })
 vim.keymap.set("t", "<C-n>", [[<C-\><C-n>]], { desc = "Exit terminal mode" })
 vim.keymap.set("n", "<leader>t", toggle_terminal, { desc = "Toggle terminal" })
 
--- Bugs the lazygit interface. It acts like a terminal (its probably one in the backgroud).
--- vim.keymap.set("t", "<leader>t", function()
---   vim.api.nvim_feedkeys(
---     vim.api.nvim_replace_termcodes("<C-\\><C-n>", true, false, true),
---     "n",
---     true
---   )
---   toggle_terminal()
--- end, { desc = "Toggle terminal" })
