@@ -404,15 +404,7 @@ end
 vim.keymap.set("n", "<leader>o", ":Oil<CR>", { desc = "Exit terminal mode" })
 vim.keymap.set("t", "<C-n>", [[<C-\><C-n>]], { desc = "Exit terminal mode" })
 vim.keymap.set("n", "<leader>t", toggle_terminal, { desc = "Toggle terminal" })
-vim.keymap.set("n", "<leader>ct", function()
-    local ft = vim.bo.filetype
-    if ft ~= "typescript" and ft ~= "typescriptreact" then
-        vim.notify("Not a TypeScript file", vim.log.levels.WARN)
-        return
-    end
-
-    vim.cmd([[normal! i/**<CR> * <CR> */<Esc>kkA]])
-end, { desc = "Comment TypeScript" })
+vim.keymap.set("n", "<leader>ct", "i/**<CR>*<CR>*/<Esc>ka", { desc = "Comment TypeScript" })
 
 -- Bugs the lazygit interface. It acts like a terminal (its probably one in the backgroud).
 -- vim.keymap.set("t", "<leader>t", function()
