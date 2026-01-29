@@ -222,6 +222,9 @@ require("lazy").setup({
         'nvim-telescope/telescope-ui-select.nvim',
         config = function()
             require("telescope").setup({
+                defaults = {
+                    path_display = { "truncate" }
+                },
                 extensions = {
                     ["ui-select"] = {
                         require("telescope.themes").get_dropdown {}
@@ -342,6 +345,10 @@ vim.api.nvim_create_autocmd("LspAttach", {
             end,
             { buffer = bufnr, silent = true, desc = "Code action" })
 
+        vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, {
+            buffer = bufnr,
+            desc = "Rename symbol",
+        })
         -- Format on save
         -- vim.api.nvim_create_autocmd("BufWritePre", {
         --     buffer = bufnr,
@@ -373,7 +380,11 @@ vim.keymap.set('n', '<leader>L', function()
 local builtin = require('telescope.builtin')
 vim.keymap.set('n', '<leader>f', builtin.find_files, { desc = 'Telescope find files' })
 vim.keymap.set('n', '<leader>/', builtin.live_grep, { desc = 'Telescope live grep' })
-vim.keymap.set('n', '<leader>b', builtin.buffers, { desc = 'Telescope buffers' })
+vim.keymap.set('n', '<leader>b', function()
+    builtin.buffers({
+        sort_mru = true
+    })
+end, { desc = 'Telescope buffers' })
 -- vim.keymap.set('n', 'gd', builtin.lsp_definitions, { desc = 'LSP Definitions' })
 vim.keymap.set('n', '<leader>d', builtin.lsp_workspace_symbols, { desc = 'LSP Workspace Symbols' })
 vim.keymap.set('n', 'gr', builtin.lsp_references, { desc = "LSP references" })
@@ -387,7 +398,7 @@ vim.keymap.set("n", "<leader>e", builtin.diagnostics, { desc = "Diagnostics" })
 
 -- Search for searching by name important components from this file (like functions, classes, class parameters). It will
 -- not search for function variables and stuff like that.
-vim.keymap.set( "n", "<leader>ds", builtin.lsp_document_symbols, { desc = "Document symbols" })
+vim.keymap.set("n", "<leader>ds", builtin.lsp_document_symbols, { desc = "Document symbols" })
 
 -- harpoon2
 local harpoon = require("harpoon")
@@ -433,4 +444,3 @@ end
 vim.keymap.set("n", "<leader>o", ":Oil<CR>", { desc = "Exit terminal mode" })
 vim.keymap.set("t", "<C-n>", [[<C-\><C-n>]], { desc = "Exit terminal mode" })
 vim.keymap.set("n", "<leader>t", toggle_terminal, { desc = "Toggle terminal" })
-
