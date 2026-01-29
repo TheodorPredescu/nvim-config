@@ -39,38 +39,6 @@ vim.opt.clipboard = 'unnamedplus'
 vim.keymap.set('n', '<C-c>', '<cmd>nohlsearch<CR>')
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
--- Automatic putting pairs for each a 'opening' element
-vim.keymap.set('i', '(', '()<Left>')
-vim.keymap.set('i', '{', '{}<Left>')
-vim.keymap.set('i', '[', '[]<Left>')
-vim.keymap.set('i', "'", "''<Left>")
-vim.keymap.set('i', '"', '""<Left>')
-vim.keymap.set('i', '`', '``<Left>')
--- vim.keymap.set('i', '<CR>', function()
---     local col = vim.fn.col('.') - 1
---     local line = vim.fn.getline('.')
---
---     -- Check if cursor is between { and }
---     if col <= 0 then
---         return "\n"
---     end
---     local first = line:sub(col, col);
---     local second = line:sub(col + 1, col + 1);
---     if (first == '(' and second == ')') or
---         (first == '[' and second == ']') or
---         (first == '{' and second == '}')
---     then
---         -- Insert two new lines and position cursor on the middle line
---         vim.api.nvim_feedkeys(
---             vim.api.nvim_replace_termcodes("<CR><Esc>O", true, false, true), 'n', true
---         )
---         return ""
---     else
---         return "\n"
---     end
--- end, { expr = true, noremap = true })
-
-
 --------------------------------- LAZY ---------------------------------
 -- Bootstrap lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -292,6 +260,23 @@ require("lazy").setup({
         end
 
     },
+    {
+        "windwp/nvim-autopairs",
+        event = "InsertEnter",
+        dependencies = { "nvim-treesitter/nvim-treesitter" },
+        config = function()
+            require("nvim-autopairs").setup({
+                check_ts = true,
+                ts_config = {
+                    lua = { "string" }, -- don't autopair in strings
+                    javascript = { "template_string" },
+                    typescript = { "template_string" },
+                },
+                enable_check_bracket_line = true,
+                fast_wrap = {},
+            })
+        end,
+    },
 })
 
 
@@ -444,3 +429,11 @@ end
 vim.keymap.set("n", "<leader>o", ":Oil<CR>", { desc = "Exit terminal mode" })
 vim.keymap.set("t", "<C-n>", [[<C-\><C-n>]], { desc = "Exit terminal mode" })
 vim.keymap.set("n", "<leader>t", toggle_terminal, { desc = "Toggle terminal" })
+
+local cmp_autopairs = require("nvim-autopairs.completion.cmp")
+local cmp = require("cmp")
+
+cmp.event:on(
+    "confirm_done",
+    cmp_autopairs.on_confirm_done()
+)
