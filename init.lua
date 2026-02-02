@@ -4,7 +4,6 @@ vim.opt.ruler = true
 vim.opt.showmode = true
 vim.opt.hlsearch = true
 vim.opt.ignorecase = true
--- vim.bo.fileformat = "dos" -- or unix
 
 -- tab to spaces
 vim.opt.expandtab = true
@@ -33,6 +32,17 @@ vim.opt.undolevels = 500
 
 vim.g.mapleader = " "
 vim.g.maplocalleader = "\\"
+
+
+
+local os = vim.loop.os_uname().sysname
+if os == "Linux" then
+    print("On linux - using unix fileformat")
+    vim.bo.fileformat = "unix"
+elseif os == "Windows" then
+    print("On Windows - using dos fileformat")
+    vim.bo.fileformat = "dos"
+end
 
 -- Makes it so the neovim uses the default clipboard used by the operating system.
 vim.opt.clipboard = 'unnamedplus'
@@ -337,16 +347,16 @@ vim.api.nvim_create_autocmd("LspAttach", {
 
 ---------- Persistence keybindings ----------
 -- load the session for the current directory
-vim.keymap.set("n", "<leader>pc", function() require("persistence").load() end)
+vim.keymap.set("n", "<leader>qs", function() require("persistence").load() end)
 
 -- select a session to load
-vim.keymap.set("n", "<leader>pl", function() require("persistence").select() end)
+vim.keymap.set("n", "<leader>ql", function() require("persistence").select() end)
 
 -- load the last session
-vim.keymap.set("n", "<leader>pL", function() require("persistence").load({ last = true }) end)
+vim.keymap.set("n", "<leader>qL", function() require("persistence").load({ last = true }) end)
 
 -- stop Persistence => session won't be saved on exit
-vim.keymap.set("n", "<leader>pd", function() require("persistence").stop() end)
+vim.keymap.set("n", "<leader>qd", function() require("persistence").stop() end)
 
 -- Telescope commands
 local builtin = require('telescope.builtin')
