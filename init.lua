@@ -39,7 +39,7 @@ local os = vim.loop.os_uname().sysname
 if os == "Linux" then
     print("On linux - using unix fileformat")
     vim.bo.fileformat = "unix"
-elseif os == "Windows" then
+elseif os == "Windows_NT" then
     print("On Windows - using dos fileformat")
     vim.bo.fileformat = "dos"
 end
