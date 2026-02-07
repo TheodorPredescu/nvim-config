@@ -236,14 +236,6 @@ require("lazy").setup({
 
     },
     {
-        "folke/persistence.nvim",
-        event = "BufReadPre",                              -- this will only start session saving when an actual file was opened
-        opts = {
-            dir = vim.fn.stdpath("state") .. "/sessions/", -- where sessions are stored
-            options = { "buffers", "curdir", "tabpages", "winsize" },
-        }
-    },
-    {
         'nvim-treesitter/nvim-treesitter',
         lazy = false,
         build = ':TSUpdate',
@@ -345,18 +337,57 @@ vim.api.nvim_create_autocmd("LspAttach", {
     end
 })
 
----------- Persistence keybindings ----------
--- load the session for the current directory
-vim.keymap.set("n", "<leader>qs", function() require("persistence").load() end)
+-- Mimic persistence bihaviour
+local session_dir = vim.fn.stdpath("state") .. "/sessions/"
 
--- select a session to load
-vim.keymap.set("n", "<leader>ql", function() require("persistence").select() end)
+-- make sure the directory exists
+vim.fn.mkdir(session_dir, "p")
 
--- load the last session
-vim.keymap.set("n", "<leader>qL", function() require("persistence").load({ last = true }) end)
+-- sanitize cwd to a filename-safe string
+local function session_path()
+    local cwd = vim.fn.getcwd()
+    local name = cwd:gsub("[/\\:]", "%%")
+    return session_dir .. name .. ".vim"
+end
 
--- stop Persistence => session won't be saved on exit
-vim.keymap.set("n", "<leader>qd", function() require("persistence").stop() end)
+-- save session
+vim.keymap.set("n", "<leader>qs", function()
+    vim.cmd("mksession! " .. vim.fn.fnameescape(session_path()))
+    print("Session saved")
+end, { desc = "Save session (cwd)" })
+
+-- load session
+vim.keymap.set("n", "<leader>ql", function()
+    local path = session_path()
+    if vim.fn.filereadable(path) == 1 then
+        vim.cmd("source " .. vim.fn.fnameescape(path))
+        print("Session loaded")
+    else
+        print("No session found for this directory")
+    end
+end, { desc = "Load session (cwd)" })
+
+vim.keymap.set("n", "<leader>qL", function()
+    require("telescope.builtin").find_files({
+        prompt_title = "Sessions",
+        cwd = session_dir,
+        previewer = false,
+        attach_mappings = function(prompt_bufnr, map)
+            local actions = require("telescope.actions")
+            local action_state = require("telescope.actions.state")
+
+            local function source_session()
+                local selection = action_state.get_selected_entry()
+                actions.close(prompt_bufnr)
+                vim.cmd("source " .. vim.fn.fnameescape(selection.path))
+            end
+
+            map("i", "<CR>", source_session)
+            map("n", "<CR>", source_session)
+            return true
+        end,
+    })
+end, { desc = "Browse and source sessions" })
 
 -- Telescope commands
 local builtin = require('telescope.builtin')
