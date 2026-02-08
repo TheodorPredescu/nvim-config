@@ -351,13 +351,13 @@ local function session_path()
 end
 
 -- save session
-vim.keymap.set("n", "<leader>qs", function()
+vim.keymap.set("n", "<leader>qc", function()
     vim.cmd("mksession! " .. vim.fn.fnameescape(session_path()))
     print("Session saved")
 end, { desc = "Save session (cwd)" })
 
 -- load session
-vim.keymap.set("n", "<leader>ql", function()
+vim.keymap.set("n", "<leader>qs", function()
     local path = session_path()
     if vim.fn.filereadable(path) == 1 then
         vim.cmd("source " .. vim.fn.fnameescape(path))
@@ -367,7 +367,7 @@ vim.keymap.set("n", "<leader>ql", function()
     end
 end, { desc = "Load session (cwd)" })
 
-vim.keymap.set("n", "<leader>qL", function()
+vim.keymap.set("n", "<leader>ql", function()
     require("telescope.builtin").find_files({
         prompt_title = "Sessions",
         cwd = session_dir,
