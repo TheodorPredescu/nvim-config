@@ -460,6 +460,28 @@ end
 vim.keymap.set("n", "<leader>o", ":Oil<CR>", { desc = "Exit terminal mode" })
 vim.keymap.set("t", "<C-n>", [[<C-\><C-n>]], { desc = "Exit terminal mode" })
 vim.keymap.set("n", "<leader>t", toggle_terminal, { desc = "Toggle terminal" })
+vim.keymap.set("n", "gbc", function()
+    local row = vim.api.nvim_win_get_cursor(0)[1]
+
+    vim.api.nvim_buf_set_lines(0, row - 1, row - 1, false, {
+        "/**",
+        "* ",
+        "*/",
+    })
+    vim.api.nvim_win_set_cursor(0, { row + 1, 1 })
+
+    -- After a short period of time, format those 3 lines using the lsp formatter.
+    vim.defer_fn(function()
+        vim.lsp.buf.format({
+            range = {
+                ["start"] = { row, 0 },
+                ["end"] = { row + 2, 999 },
+            },
+            async = false,
+        })
+    end, 0)
+    vim.api.nvim_feedkeys('a', 'n', false)
+end)
 
 local cmp_autopairs = require("nvim-autopairs.completion.cmp")
 local cmp = require("cmp")
