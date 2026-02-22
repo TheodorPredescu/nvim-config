@@ -393,6 +393,12 @@ vim.keymap.set("n", "<leader>ql", function()
     })
 end, { desc = "Browse and source sessions" })
 
+vim.keymap.set("n", "<leader>*", function()
+    local word = vim.fn.expand("<cword>")
+    vim.fn.setreg("/", "\\<" .. word .. "\\>")
+    vim.opt.hlsearch = true
+end, { desc = "Highlight word under cursor" })
+
 -- Telescope commands
 local builtin = require('telescope.builtin')
 vim.keymap.set('n', '<leader>f', builtin.find_files, { desc = 'Telescope find files' })
