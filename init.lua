@@ -4,6 +4,9 @@ vim.opt.ruler = true
 vim.opt.showmode = true
 vim.opt.hlsearch = true
 vim.opt.ignorecase = true
+vim.opt.smartcase = true
+
+vim.opt.autoread = true
 
 -- tab to spaces
 vim.opt.expandtab = true
@@ -465,22 +468,26 @@ vim.keymap.set("n", "gbc", function()
 
     vim.api.nvim_buf_set_lines(0, row - 1, row - 1, false, {
         "/**",
-        "* ",
-        "*/",
+        " *",
+        " */",
     })
-    vim.api.nvim_win_set_cursor(0, { row + 1, 1 })
 
     -- After a short period of time, format those 3 lines using the lsp formatter.
-    vim.defer_fn(function()
-        vim.lsp.buf.format({
-            range = {
-                ["start"] = { row, 0 },
-                ["end"] = { row + 2, 999 },
-            },
-            async = false,
-        })
-    end, 0)
-    vim.api.nvim_feedkeys('a', 'n', false)
+    vim.lsp.buf.format({
+        range = {
+            ["start"] = { row, 0 },
+            ["end"] = { row + 2, 0 },
+        },
+        async = false,
+    })
+
+    local middle_line = vim.api.nvim_buf_get_lines(0, row, row + 1, false)[1]
+    -- Find position after "* "
+    local col = middle_line:find("%*%s") or 1
+
+    -- Move cursor safely
+    vim.api.nvim_win_set_cursor(0, { row + 1, col })
+    vim.api.nvim_feedkeys('a ', 'n', false)
 end)
 
 local cmp_autopairs = require("nvim-autopairs.completion.cmp")
