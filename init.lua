@@ -102,9 +102,9 @@ require("lazy").setup({
                 ensure_installed = {
                     "prettier",
                     "stylua",
-                    "black",
                     "pylint",
                     "eslint_d",
+                    "ruff",
                 },
             })
         end,
@@ -331,7 +331,6 @@ require("lazy").setup({
                     typescript = { "prettier" },
                     javascriptreact = { "prettier" },
                     typescriptreact = { "prettier" },
-                    javascriptangular = { "prettier" },
                     typescriptangular = { "prettier" },
                     svelte = { "prettier" },
                     cssangular = { "prettier" },
@@ -342,32 +341,7 @@ require("lazy").setup({
                     markdown = { "prettier" },
                     graphql = { "prettier" },
                     lua = { "stylua" },
-                    python = { "black" },
-                },
-            })
-
-            conform.formatters.prettier = vim.tbl_deep_extend("force", conform.formatters.prettier or {}, {
-                prepend_args = {
-                    "--tab-width",
-                    "4",
-                    "--use-tabs",
-                    "false",
-                    "--print-width",
-                    "120",
-                    "--semi",
-                    "true", -- or "false"
-                    "--trailing-comma",
-                    "es5",
-                },
-            })
-            conform.formatters.stylua = vim.tbl_deep_extend("force", conform.formatters.stylua or {}, {
-                prepend_args = {
-                    "--indent-type",
-                    "Spaces",
-                    "--indent-width",
-                    "4",
-                    "--column-width",
-                    "120",
+                    python = { "ruff_format" },
                 },
             })
         end,
@@ -387,7 +361,7 @@ require("lazy").setup({
                 javascriptreact = { "eslint_d" },
                 typescriptreact = { "eslint_d" },
                 svelte = { "eslint_d" },
-                python = { "pylint" },
+                python = { "ruff" },
             }
 
             local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })
