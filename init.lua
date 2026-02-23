@@ -24,7 +24,7 @@ vim.opt.textwidth = 120
 vim.opt.colorcolumn = "120"
 
 vim.opt.backup = false
-local swapDir = vim.fn.stdpath("state") .. '/swap'
+local swapDir = vim.fn.stdpath("state") .. "/swap"
 vim.opt.swapfile = true
 
 vim.opt.directory = swapDir .. "//"
@@ -36,21 +36,24 @@ vim.opt.undolevels = 500
 vim.g.mapleader = " "
 vim.g.maplocalleader = "\\"
 
-
-
 local os = vim.loop.os_uname().sysname
 if os == "Linux" then
-    print("On linux - using unix fileformat")
     vim.bo.fileformat = "unix"
 elseif os == "Windows_NT" then
-    print("On Windows - using dos fileformat")
     vim.bo.fileformat = "dos"
+
+    vim.opt.shell = "pwsh.exe"
+
+    -- Optional: arguments to make it behave nicely in Neovim terminal
+    vim.opt.shellcmdflag = "-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command"
+    vim.opt.shellquote = ""
+    vim.opt.shellxquote = ""
 end
 
 -- Makes it so the neovim uses the default clipboard used by the operating system.
-vim.opt.clipboard = 'unnamedplus'
-vim.keymap.set('n', '<C-c>', '<cmd>nohlsearch<CR>')
-vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
+vim.opt.clipboard = "unnamedplus"
+vim.keymap.set("n", "<C-c>", "<cmd>nohlsearch<CR>")
+vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
 
 --------------------------------- LAZY ---------------------------------
 -- Bootstrap lazy.nvim
@@ -61,7 +64,7 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
     if vim.v.shell_error ~= 0 then
         vim.api.nvim_echo({
             { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
-            { out,                            "WarningMsg" },
+            { out, "WarningMsg" },
             { "\nPress any key to exit..." },
         }, true, {})
         vim.fn.getchar()
@@ -89,9 +92,22 @@ require("lazy").setup({
     -- Mason (manages LSP binaries)
     {
         "williamboman/mason.nvim",
+        dependencies = {
+            "WhoIsSethDaniel/mason-tool-installer.nvim",
+        },
         config = function()
             require("mason").setup()
-        end
+            local mason_tool_installer = require("mason-tool-installer")
+            mason_tool_installer.setup({
+                ensure_installed = {
+                    "prettier",
+                    "stylua",
+                    "black",
+                    "pylint",
+                    "eslint_d",
+                },
+            })
+        end,
     },
 
     -- Mason LSP integration
@@ -102,16 +118,27 @@ require("lazy").setup({
             local mason_lsp = require("mason-lspconfig")
 
             mason_lsp.setup({
-                ensure_installed = { "pyright", "clangd", "lua_ls" }
+                ensure_installed = { "pyright", "clangd", "lua_ls" },
             })
 
             -- The html lsp used in vscode does not check for htmlangular files, but only for html.
             if vim.lsp.config.html then
                 vim.lsp.config.html = {
-                    filetypes = { 'html', 'htmlangular' }
+                    filetypes = { "html", "htmlangular" },
                 }
             end
-        end
+            vim.lsp.config("ts_ls", {
+                on_attach = function(client, _)
+                    client.server_capabilities.referencesProvider = false
+                end,
+            })
+
+            vim.lsp.config("angularls", {
+                on_attach = function(client, _)
+                    client.server_capabilities.documentRangeFormattingProvider = false
+                end,
+            })
+        end,
     },
 
     -- Autocompletion
@@ -124,8 +151,8 @@ require("lazy").setup({
                 completion = { autocomplete = { require("cmp.types").cmp.TriggerEvent.TextChanged } },
                 window = {
                     completion = {
-                        max_height = 10,    -- max number of entries shown
-                        max_width = 50,     -- max width in characters
+                        max_height = 10, -- max number of entries shown
+                        max_width = 50, -- max width in characters
                         border = "rounded", -- optional but nice
                         winhighlight = "Normal:NormalFloat,FloatBorder:FloatBorder,CursorLine:PmenuSel,Search:None",
                     },
@@ -144,7 +171,7 @@ require("lazy").setup({
                 },
                 sources = { { name = "nvim_lsp" } },
             })
-        end
+        end,
     },
     {
         "kdheepak/lazygit.nvim",
@@ -163,8 +190,8 @@ require("lazy").setup({
         -- setting the keybinding for LazyGit with 'keys' is recommended in
         -- order to load the plugin when the command is run for the first time
         keys = {
-            { "<leader>lg", "<cmd>LazyGit<cr>", desc = "LazyGit" }
-        }
+            { "<leader>lg", "<cmd>LazyGit<cr>", desc = "LazyGit" },
+        },
     },
     {
         "lewis6991/gitsigns.nvim",
@@ -173,55 +200,75 @@ require("lazy").setup({
         config = function()
             require("gitsigns").setup({
                 signs = {
-                    add          = { hl = "GitGutterAdd", text = "│", numhl = "GitGutterAddNr", linehl = "GitGutterAddLn" },
-                    change       = { hl = "GitGutterChange", text = "│", numhl = "GitGutterChangeNr", linehl = "GitGutterChangeLn" },
-                    delete       = { hl = "GitGutterDelete", text = "_", numhl = "GitGutterDeleteNr", linehl = "GitGutterDeleteLn" },
-                    topdelete    = { hl = "GitGutterDelete", text = "‾", numhl = "GitGutterDeleteNr", linehl = "GitGutterDeleteLn" },
-                    changedelete = { hl = "GitGutterChange", text = "~", numhl = "GitGutterChangeNr", linehl = "GitGutterChangeLn" },
+                    add = { hl = "GitGutterAdd", text = "│", numhl = "GitGutterAddNr", linehl = "GitGutterAddLn" },
+                    change = {
+                        hl = "GitGutterChange",
+                        text = "│",
+                        numhl = "GitGutterChangeNr",
+                        linehl = "GitGutterChangeLn",
+                    },
+                    delete = {
+                        hl = "GitGutterDelete",
+                        text = "_",
+                        numhl = "GitGutterDeleteNr",
+                        linehl = "GitGutterDeleteLn",
+                    },
+                    topdelete = {
+                        hl = "GitGutterDelete",
+                        text = "‾",
+                        numhl = "GitGutterDeleteNr",
+                        linehl = "GitGutterDeleteLn",
+                    },
+                    changedelete = {
+                        hl = "GitGutterChange",
+                        text = "~",
+                        numhl = "GitGutterChangeNr",
+                        linehl = "GitGutterChangeLn",
+                    },
                 },
                 current_line_blame = false, -- shows git blame for current line
                 watch_gitdir = {
-                    follow_files = true
+                    follow_files = true,
                 },
                 sign_priority = 6,
                 update_debounce = 100,
             })
-        end
+        end,
     },
 
     -- Fuzzy finder and live grep with telescome
     {
-        'nvim-telescope/telescope.nvim',
-        version = '*',
+        "nvim-telescope/telescope.nvim",
+        version = "*",
         dependencies = {
-            'nvim-lua/plenary.nvim',
+            "nvim-lua/plenary.nvim",
             -- optional but recommended
-            { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
-        }
+            { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
+        },
     },
     {
-        'nvim-telescope/telescope-ui-select.nvim',
+        "nvim-telescope/telescope-ui-select.nvim",
         config = function()
             require("telescope").setup({
                 defaults = {
-                    path_display = { "truncate" }
+                    path_display = { "truncate" },
                 },
                 extensions = {
                     ["ui-select"] = {
-                        require("telescope.themes").get_dropdown {}
-                    }
-                }
+                        require("telescope.themes").get_dropdown({}),
+                    },
+                },
             })
             require("telescope").load_extension("ui-select")
-        end
+        end,
     },
     {
         "ThePrimeagen/harpoon",
         branch = "harpoon2",
-        dependencies = { "nvim-lua/plenary.nvim" }
+        dependencies = { "nvim-lua/plenary.nvim" },
     },
     {
-        'stevearc/oil.nvim',
+        "stevearc/oil.nvim",
         ---@module 'oil'
         ---@diagnostic disable-next-line: undefined-doc-name
         ---@type oil.SetupOpts
@@ -231,32 +278,30 @@ require("lazy").setup({
             },
             keymaps = {
                 ["<C-c>"] = false,
-            }
+            },
         },
         -- Optional dependencies
         dependencies = { { "nvim-mini/mini.icons", opts = {} } },
         lazy = false,
-
     },
     {
-        'nvim-treesitter/nvim-treesitter',
+        "nvim-treesitter/nvim-treesitter",
         lazy = false,
-        build = ':TSUpdate',
+        build = ":TSUpdate",
         opts = {
 
             ensure_installed = { "typescript", "javascript", "html", "css", "python", "lua" },
             auto_install = true,
             highlight = { enable = true },
             indent = { enable = true }, -- this handles Enter spacing/indent automatically
-        }
+        },
     },
     {
         "kshenoy/vim-signature",
         config = function()
             vim.g.SignatureMarkText = "⚑" -- mark symbol
             vim.g.SignatureColumnWidth = 2
-        end
-
+        end,
     },
     {
         "windwp/nvim-autopairs",
@@ -275,9 +320,95 @@ require("lazy").setup({
             })
         end,
     },
+    {
+        "stevearc/conform.nvim",
+        config = function()
+            local conform = require("conform")
+
+            conform.setup({
+                formatters_by_ft = {
+                    javascript = { "prettier" },
+                    typescript = { "prettier" },
+                    javascriptreact = { "prettier" },
+                    typescriptreact = { "prettier" },
+                    javascriptangular = { "prettier" },
+                    typescriptangular = { "prettier" },
+                    svelte = { "prettier" },
+                    cssangular = { "prettier" },
+                    html = { "prettier" },
+                    htmlangular = { "prettier" },
+                    json = { "prettier" },
+                    yaml = { "prettier" },
+                    markdown = { "prettier" },
+                    graphql = { "prettier" },
+                    lua = { "stylua" },
+                    python = { "black" },
+                },
+            })
+
+            conform.formatters.prettier = vim.tbl_deep_extend("force", conform.formatters.prettier or {}, {
+                prepend_args = {
+                    "--tab-width",
+                    "4",
+                    "--use-tabs",
+                    "false",
+                    "--print-width",
+                    "120",
+                    "--semi",
+                    "true", -- or "false"
+                    "--trailing-comma",
+                    "es5",
+                },
+            })
+            conform.formatters.stylua = vim.tbl_deep_extend("force", conform.formatters.stylua or {}, {
+                prepend_args = {
+                    "--indent-type",
+                    "Spaces",
+                    "--indent-width",
+                    "4",
+                    "--column-width",
+                    "120",
+                },
+            })
+        end,
+    },
+    {
+        "mfussenegger/nvim-lint",
+        event = {
+            "BufReadPre",
+            "BufNewFile",
+        },
+        config = function()
+            local lint = require("lint")
+
+            lint.linters_by_ft = {
+                javascript = { "eslint_d" },
+                typescript = { "eslint_d" },
+                javascriptreact = { "eslint_d" },
+                typescriptreact = { "eslint_d" },
+                svelte = { "eslint_d" },
+                python = { "pylint" },
+            }
+
+            local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })
+
+            vim.api.nvim_create_autocmd({ "BufEnter", "InsertLeave" }, {
+                group = lint_augroup,
+                callback = function()
+                    lint.try_lint()
+                end,
+            })
+
+            lint.linters.pylint = vim.tbl_deep_extend("force", lint.linters.pylint or {}, {
+                args = {
+                    "--disable=C0116", -- missing-function-docstring
+                    "--max-line-length=120",
+                    "--output-format=text",
+                },
+            })
+        end,
+    },
 })
-
-
 
 -- ========================================================================== --
 ------------------------------- End of require ---------------------------------
@@ -294,7 +425,7 @@ vim.api.nvim_set_hl(0, "SignatureMarkCurrentLine", { fg = "#ff00ff", bg = "NONE"
 vim.diagnostic.config({
     virtual_text = true, -- inline errors/warnings
     severity_sort = true,
-    signs = true,        -- gutter icons
+    signs = true,
     underline = true,
     update_in_insert = true,
 })
@@ -305,10 +436,10 @@ vim.api.nvim_create_autocmd("LspAttach", {
         local bufnr = args.buf
 
         vim.keymap.set("n", "K", function()
-                vim.lsp.buf.hover({
-                    border = "rounded" })
-            end,
-            { buffer = bufnr, silent = true, desc = "Hover" })
+            vim.lsp.buf.hover({
+                border = "rounded",
+            })
+        end, { buffer = bufnr, silent = true, desc = "Hover" })
 
         vim.keymap.set("n", "<C-k>", function()
             vim.lsp.buf.signature_help({
@@ -316,29 +447,30 @@ vim.api.nvim_create_autocmd("LspAttach", {
             })
         end, { buffer = bufnr, silent = true, desc = "Signature help" })
 
-        -- vim.keymap.set("n", "gr", vim.lsp.buf.references, { buffer = bufnr, silent = true, desc = "Reference" })
-
         vim.keymap.set("n", "<leader>ca", function()
-                vim.lsp.buf.code_action({
-                    window = {
-                        border = "rounded",
-                        row = 1,
-                        col = vim.o.columns / 2,
-                    }
-                })
-            end,
-            { buffer = bufnr, silent = true, desc = "Code action" })
+            vim.lsp.buf.code_action({
+                window = {
+                    border = "rounded",
+                    row = 1,
+                    col = vim.o.columns / 2,
+                },
+            })
+        end, { buffer = bufnr, silent = true, desc = "Code action" })
 
         vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, {
             buffer = bufnr,
             desc = "Rename symbol",
         })
 
-        vim.keymap.set('n', '<leader>w', function()
-                vim.lsp.buf.format({ async = true })
-            end,
-            { buffer = bufnr, desc = "Format buffer" })
-    end
+        vim.keymap.set("n", "<leader>w", function()
+            local conform = require("conform")
+            conform.format({
+                lsp_fallback = true,
+                async = false,
+                timeout_ms = 500,
+            })
+        end, { buffer = bufnr, desc = "Format buffer" })
+    end,
 })
 
 -- Mimic persistence bihaviour
@@ -400,18 +532,18 @@ vim.keymap.set("n", "<leader>*", function()
 end, { desc = "Highlight word under cursor" })
 
 -- Telescope commands
-local builtin = require('telescope.builtin')
-vim.keymap.set('n', '<leader>f', builtin.find_files, { desc = 'Telescope find files' })
-vim.keymap.set('n', '<leader>/', builtin.live_grep, { desc = 'Telescope live grep' })
-vim.keymap.set('n', '<leader>b', function()
+local builtin = require("telescope.builtin")
+vim.keymap.set("n", "<leader>f", builtin.find_files, { desc = "Telescope find files" })
+vim.keymap.set("n", "<leader>/", builtin.live_grep, { desc = "Telescope live grep" })
+vim.keymap.set("n", "<leader>b", function()
     builtin.buffers({
-        sort_mru = true
+        sort_mru = true,
     })
-end, { desc = 'Telescope buffers' })
+end, { desc = "Telescope buffers" })
 -- vim.keymap.set('n', 'gd', builtin.lsp_definitions, { desc = 'LSP Definitions' })
-vim.keymap.set('n', '<leader>d', builtin.lsp_workspace_symbols, { desc = 'LSP Workspace Symbols' })
-vim.keymap.set('n', 'gr', builtin.lsp_references, { desc = "LSP references" })
-vim.keymap.set('n', 'gi', builtin.lsp_implementations, { desc = "LSP implementation" })
+vim.keymap.set("n", "<leader>d", builtin.lsp_workspace_symbols, { desc = "LSP Workspace Symbols" })
+vim.keymap.set("n", "gr", builtin.lsp_references, { desc = "LSP references" })
+vim.keymap.set("n", "gi", builtin.lsp_implementations, { desc = "LSP implementation" })
 
 -- vim.keymap.set('n', '<leader>th', builtin.help_tags, { desc = 'Telescope help tags' })
 vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition" })
@@ -427,20 +559,39 @@ vim.keymap.set("n", "<leader>ds", builtin.lsp_document_symbols, { desc = "Docume
 local harpoon = require("harpoon")
 harpoon:setup()
 
-vim.keymap.set("n", "<leader>a", function() harpoon:list():add() end)
-vim.keymap.set("n", "<leader>h", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end)
+vim.keymap.set("n", "<leader>a", function()
+    harpoon:list():add()
+end)
+vim.keymap.set("n", "<leader>h", function()
+    harpoon.ui:toggle_quick_menu(harpoon:list())
+end)
 
-vim.keymap.set("n", "<leader>1", function() harpoon:list():select(1) end)
-vim.keymap.set("n", "<leader>2", function() harpoon:list():select(2) end)
-vim.keymap.set("n", "<leader>3", function() harpoon:list():select(3) end)
-vim.keymap.set("n", "<leader>4", function() harpoon:list():select(4) end)
-vim.keymap.set("n", "<leader>5", function() harpoon:list():select(5) end)
-vim.keymap.set("n", "<leader>6", function() harpoon:list():select(6) end)
+vim.keymap.set("n", "<leader>1", function()
+    harpoon:list():select(1)
+end)
+vim.keymap.set("n", "<leader>2", function()
+    harpoon:list():select(2)
+end)
+vim.keymap.set("n", "<leader>3", function()
+    harpoon:list():select(3)
+end)
+vim.keymap.set("n", "<leader>4", function()
+    harpoon:list():select(4)
+end)
+vim.keymap.set("n", "<leader>5", function()
+    harpoon:list():select(5)
+end)
+vim.keymap.set("n", "<leader>6", function()
+    harpoon:list():select(6)
+end)
 
 -- Toggle previous & next buffers stored within Harpoon list
-vim.keymap.set("n", "<leader>p", function() harpoon:list():prev() end)
-vim.keymap.set("n", "<leader>n", function() harpoon:list():next() end)
-
+vim.keymap.set("n", "<leader>p", function()
+    harpoon:list():prev()
+end)
+vim.keymap.set("n", "<leader>n", function()
+    harpoon:list():next()
+end)
 
 -- Make toggle terminal on <leader> t with history preserved.
 local term_buf = nil
@@ -493,13 +644,10 @@ vim.keymap.set("n", "gbc", function()
 
     -- Move cursor safely
     vim.api.nvim_win_set_cursor(0, { row + 1, col })
-    vim.api.nvim_feedkeys('a ', 'n', false)
+    vim.api.nvim_feedkeys("a ", "n", false)
 end)
 
 local cmp_autopairs = require("nvim-autopairs.completion.cmp")
 local cmp = require("cmp")
 
-cmp.event:on(
-    "confirm_done",
-    cmp_autopairs.on_confirm_done()
-)
+cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
