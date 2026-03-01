@@ -585,6 +585,7 @@ local function toggle_terminal()
     vim.cmd("startinsert")
 end
 
+vim.keymap.set("i", "<C-c>", "<Esc>")
 vim.keymap.set("n", "<leader>o", ":Oil<CR>", { desc = "Exit terminal mode" })
 vim.keymap.set("t", "<C-[>", [[<C-\><C-n>]], { desc = "Exit terminal mode" })
 vim.keymap.set("t", "<C-\\>", function()
@@ -592,32 +593,33 @@ vim.keymap.set("t", "<C-\\>", function()
     toggle_terminal()
 end, { desc = "Exit terminal mode" })
 vim.keymap.set("n", "<C-\\>", toggle_terminal, { desc = "Toggle terminal" })
-vim.keymap.set("n", "gbc", function()
-    local row = vim.api.nvim_win_get_cursor(0)[1]
-
-    vim.api.nvim_buf_set_lines(0, row - 1, row - 1, false, {
-        "/**",
-        " *",
-        " */",
-    })
-
-    -- After a short period of time, format those 3 lines using the lsp formatter.
-    vim.lsp.buf.format({
-        range = {
-            ["start"] = { row, 0 },
-            ["end"] = { row + 2, 0 },
-        },
-        async = false,
-    })
-
-    local middle_line = vim.api.nvim_buf_get_lines(0, row, row + 1, false)[1]
-    -- Find position after "* "
-    local col = middle_line:find("%*%s") or 1
-
-    -- Move cursor safely
-    vim.api.nvim_win_set_cursor(0, { row + 1, col })
-    vim.api.nvim_feedkeys("a ", "n", false)
-end)
+vim.keymap.set("n", "gbc", "<Esc>O */<Esc>O<Esc>I <Esc>O<Esc>I/*<Esc>jA ")
+-- vim.keymap.set("n", "gbc", function()
+--     local row = vim.api.nvim_win_get_cursor(0)[1]
+--
+--     vim.api.nvim_buf_set_lines(0, row - 1, row - 1, false, {
+--         "/**",
+--         " *",
+--         " */",
+--     })
+--
+--     -- After a short period of time, format those 3 lines using the lsp formatter.
+--     vim.lsp.buf.format({
+--         range = {
+--             ["start"] = { row, 0 },
+--             ["end"] = { row + 2, 0 },
+--         },
+--         async = false,
+--     })
+--
+--     local middle_line = vim.api.nvim_buf_get_lines(0, row, row + 1, false)[1]
+--     -- Find position after "* "
+--     local col = middle_line:find("%*%s") or 1
+--
+--     -- Move cursor safely
+--     vim.api.nvim_win_set_cursor(0, { row + 1, col })
+--     vim.api.nvim_feedkeys("a ", "n", false)
+-- end)
 
 local cmp_autopairs = require("nvim-autopairs.completion.cmp")
 local cmp = require("cmp")
