@@ -102,9 +102,9 @@ require("lazy").setup({
                 ensure_installed = {
                     "prettier",
                     "stylua",
-                    "pylint",
                     "eslint_d",
                     "ruff",
+                    "clang-format",
                 },
             })
         end,
@@ -342,6 +342,8 @@ require("lazy").setup({
                     graphql = { "prettier" },
                     lua = { "stylua" },
                     python = { "ruff_format" },
+                    c = { "clang-format" },
+                    cpp = { "clang-format" },
                 },
             })
         end,
@@ -371,14 +373,6 @@ require("lazy").setup({
                 callback = function()
                     lint.try_lint()
                 end,
-            })
-
-            lint.linters.pylint = vim.tbl_deep_extend("force", lint.linters.pylint or {}, {
-                args = {
-                    "--disable=C0116", -- missing-function-docstring
-                    "--max-line-length=120",
-                    "--output-format=text",
-                },
             })
         end,
     },
@@ -515,7 +509,7 @@ vim.keymap.set("n", "<leader>b", function()
     })
 end, { desc = "Telescope buffers" })
 -- vim.keymap.set('n', 'gd', builtin.lsp_definitions, { desc = 'LSP Definitions' })
-vim.keymap.set("n", "<leader>d", builtin.lsp_workspace_symbols, { desc = "LSP Workspace Symbols" })
+-- vim.keymap.set("n", "<leader>d", builtin.lsp_workspace_symbols, { desc = "LSP Workspace Symbols" })
 vim.keymap.set("n", "gr", builtin.lsp_references, { desc = "LSP references" })
 vim.keymap.set("n", "gi", builtin.lsp_implementations, { desc = "LSP implementation" })
 
@@ -592,8 +586,12 @@ local function toggle_terminal()
 end
 
 vim.keymap.set("n", "<leader>o", ":Oil<CR>", { desc = "Exit terminal mode" })
-vim.keymap.set("t", "<C-n>", [[<C-\><C-n>]], { desc = "Exit terminal mode" })
-vim.keymap.set("n", "<leader>t", toggle_terminal, { desc = "Toggle terminal" })
+vim.keymap.set("t", "<C-[>", [[<C-\><C-n>]], { desc = "Exit terminal mode" })
+vim.keymap.set("t", "<C-\\>", function()
+    vim.cmd("stopinsert")
+    toggle_terminal()
+end, { desc = "Exit terminal mode" })
+vim.keymap.set("n", "<C-\\>", toggle_terminal, { desc = "Toggle terminal" })
 vim.keymap.set("n", "gbc", function()
     local row = vim.api.nvim_win_get_cursor(0)[1]
 
