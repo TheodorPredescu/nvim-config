@@ -376,6 +376,15 @@ require("lazy").setup({
             })
         end,
     },
+    {
+        "SmiteshP/nvim-navic",
+        dependencies = { "neovim/nvim-lspconfig" },
+        opts = {
+            highlight = true,
+            separator = " > ",
+            depth_limit = 5,
+        },
+    },
 })
 
 -- ========================================================================== --
@@ -402,6 +411,13 @@ vim.diagnostic.config({
 vim.api.nvim_create_autocmd("LspAttach", {
     callback = function(args)
         local bufnr = args.buf
+
+        local client = vim.lsp.get_client_by_id(args.data.client_id)
+        local navic = require("nvim-navic")
+
+        if client.server_capabilities.documentSymbolProvider then
+            navic.attach(client, bufnr)
+        end
 
         vim.keymap.set("n", "K", function()
             vim.lsp.buf.hover({
@@ -440,6 +456,8 @@ vim.api.nvim_create_autocmd("LspAttach", {
         end, { buffer = bufnr, desc = "Format buffer" })
     end,
 })
+
+vim.o.winbar = "%{%v:lua.require'nvim-navic'.get_location()%}"
 
 -- Mimic persistence bihaviour
 local session_dir = vim.fn.stdpath("state") .. "/sessions/"
