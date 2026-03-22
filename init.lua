@@ -36,10 +36,10 @@ vim.opt.undolevels = 500
 vim.g.mapleader = " "
 vim.g.maplocalleader = "\\"
 
-local os = vim.loop.os_uname().sysname
-if os == "Linux" then
+local os_name = vim.loop.os_uname().sysname
+if os_name == "Linux" then
     vim.bo.fileformat = "unix"
-elseif os == "Windows_NT" then
+elseif os_name == "Windows_NT" then
     vim.bo.fileformat = "dos"
 
     vim.opt.shell = "pwsh.exe"
@@ -76,18 +76,23 @@ vim.opt.rtp:prepend(lazypath)
 -- Setup lazy.nvim
 require("lazy").setup({
     {
+        "folke/lazydev.nvim",
+        ft = "lua",
+        opts = {
+            library = {
+                { path = "${3rd}/luv/library", words = { "vim%.uv" } },
+            },
+        },
+    },
+    {
         "folke/tokyonight.nvim",
         lazy = false,
         priority = 1000,
-        config = function()
-            require("tokyonight").setup({
-                styles = {
-                    floats = "transparent",
-                },
-            })
-            -- load the colorscheme here
-            vim.cmd([[colorscheme tokyonight-night]])
-        end,
+        opts = {
+            styles = {
+                floats = "transparent",
+            },
+        },
     },
     -- Mason (manages LSP binaries)
     {
@@ -391,6 +396,8 @@ require("lazy").setup({
 ------------------------------- End of require ---------------------------------
 -- ========================================================================== --
 
+vim.cmd([[colorscheme tokyonight-night]])
+
 -- Some color costumization for vim marks
 -- Normal marks '
 vim.api.nvim_set_hl(0, "SignatureMarkText", { fg = "#00ff00", bg = "NONE", bold = false })
@@ -415,7 +422,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
         local client = vim.lsp.get_client_by_id(args.data.client_id)
         local navic = require("nvim-navic")
 
-        if client.server_capabilities.documentSymbolProvider then
+        if client ~= nil and client.server_capabilities.documentSymbolProvider then
             navic.attach(client, bufnr)
         end
 
@@ -539,7 +546,7 @@ vim.keymap.set("n", "<leader>e", builtin.diagnostics, { desc = "Diagnostics" })
 
 -- Search for searching by name important components from this file (like functions, classes, class parameters). It will
 -- not search for function variables and stuff like that.
-vim.keymap.set("n", "<leader>ds", builtin.lsp_document_symbols, { desc = "Document symbols" })
+vim.keymap.set("n", "<leader>d", builtin.lsp_document_symbols, { desc = "Document symbols" })
 
 -- harpoon2
 local harpoon = require("harpoon")
