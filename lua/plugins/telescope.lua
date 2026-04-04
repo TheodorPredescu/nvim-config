@@ -30,7 +30,7 @@ return {
 
             -- Search for searching by name important components from this file (like functions, classes, class parameters). It will
             -- not search for function variables and stuff like that.
-            vim.keymap.set("n", "<leader>d", builtin.lsp_document_symbols, { desc = "Document symbols" })
+            vim.keymap.set("n", "<leader>s", builtin.lsp_document_symbols, { desc = "Document symbols" })
 
             -- Mimic persistence bihaviour
             local session_dir = vim.fn.stdpath("state") .. "/sessions/"
