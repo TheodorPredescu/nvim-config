@@ -12,31 +12,27 @@ return {
             local dap = require("dap")
             local ui = require("dapui")
 
-            require("dapui").setup({
-                icons = {
-                    expanded = "▾",
-                    collapsed = "▸",
-                    current_frame = "→",
-                    -- Breakpoint icons
-                    breakpoint = "●",
-                    breakpoint_condition = "◆",
-                    stopped = "▶",
-                    log_point = "◆",
-                },
-                controls = {
-                    icons = {
-                        pause = "⏸",
-                        play = "▶",
-                        step_into = "⏎",
-                        step_over = "↷",
-                        step_out = "↳",
-                        step_back = "↶",
-                        run_last = "⟲",
-                        terminate = "⏹",
-                    },
-                },
-            })
+            require("dapui").setup()
             require("dap-go").setup()
+            require("nvim-dap-virtual-text").setup({
+                enabled = true,
+                enabled_commands = true,
+                highlight_changed_variables = true,
+                highlight_new_as_changed = false,
+                show_stop_reason = true,
+                commented = false,
+                only_first_definition = true,
+                all_references = false,
+                clear_on_continue = false,
+                virt_text_pos = "inline",
+                display_callback = function(variable)
+                    if #variable.value > 15 then
+                        return " = " .. string.sub(variable.value, 1, 15) .. "... "
+                    end
+
+                    return " = " .. variable.value
+                end,
+            })
 
             local js_debugger = vim.fn.exepath("js-debug-adapter")
             if js_debugger ~= "" then
@@ -57,15 +53,59 @@ return {
                         name = "Launch Angular",
                         url = "http://localhost:4200",
                         webRoot = "${workspaceFolder}",
+                        sourceMaps = true,
+                        trace = true,
                     },
                 }
             end
+
+            -- Custom signs for DAP (red dot breakpoint)
+            vim.fn.sign_define("DapBreakpoint", {
+                text = "●", -- Red dot
+                texthl = "DapBreakpoint",
+                linehl = "",
+                numhl = "",
+            })
+
+            vim.fn.sign_define("DapBreakpointCondition", {
+                text = "●", -- Conditional breakpoint
+                texthl = "DapBreakpointCondition",
+                linehl = "",
+                numhl = "",
+            })
+
+            vim.fn.sign_define("DapBreakpointRejected", {
+                text = "●",
+                texthl = "DapBreakpointRejected",
+                linehl = "",
+                numhl = "",
+            })
+
+            vim.fn.sign_define("DapLogPoint", {
+                text = "◆", -- Log point (diamond)
+                texthl = "DapLogPoint",
+                linehl = "",
+                numhl = "",
+            })
+
+            vim.fn.sign_define("DapStopped", {
+                text = "→", -- Current line arrow when debugging
+                texthl = "DapStopped",
+                linehl = "DapStopped",
+                numhl = "DapStopped",
+            })
+
+            vim.api.nvim_set_hl(0, "DapBreakpoint", { fg = "#FF0000", bold = true }) -- Red
+            vim.api.nvim_set_hl(0, "DapBreakpointCondition", { fg = "#FF8800", bold = true }) -- Orange
+            vim.api.nvim_set_hl(0, "DapBreakpointRejected", { fg = "#888888" }) -- Gray
+            vim.api.nvim_set_hl(0, "DapLogPoint", { fg = "#00CCFF" }) -- Blue
+            vim.api.nvim_set_hl(0, "DapStopped", { fg = "#00FF00", bg = "#003300" })
 
             vim.keymap.set("n", "<space>db", dap.toggle_breakpoint)
             vim.keymap.set("n", "<space>dr", dap.run_to_cursor)
 
             -- Eval var under cursor
-            vim.keymap.set("n", "<space>?", function()
+            vim.keymap.set("n", "<space>dk", function()
                 require("dapui").eval(nil, { enter = true })
             end)
 
