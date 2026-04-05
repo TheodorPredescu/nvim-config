@@ -2,7 +2,6 @@ return {
     {
         "https://github.com/mfussenegger/nvim-dap",
         dependencies = {
-            "leoluz/nvim-dap-go",
             "rcarriga/nvim-dap-ui",
             "theHamsta/nvim-dap-virtual-text",
             "nvim-neotest/nvim-nio",
@@ -13,7 +12,6 @@ return {
             local ui = require("dapui")
 
             require("dapui").setup()
-            require("dap-go").setup()
             require("nvim-dap-virtual-text").setup({
                 enabled = true,
                 enabled_commands = true,
