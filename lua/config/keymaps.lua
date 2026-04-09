@@ -7,6 +7,8 @@ vim.keymap.set("n", "<leader>*", function()
     vim.opt.hlsearch = true
 end, { desc = "Highlight word under cursor" })
 
+vim.keymap.set("n",'<leader>cb', "<cmd>%bd|e#<CR>", {desc = "Delete all but the current buffer"})
+
 -- Make toggle terminal on <leader> t with history preserved.
 local term_buf = nil
 local term_win = nil
