@@ -12,7 +12,7 @@ return {
                     "prettier",
                     "stylua",
                     "eslint_d",
-                    "ruff",
+                    "pyright",
                     "clang-format",
                 },
             })
@@ -81,6 +81,25 @@ return {
                     })
                 end,
             })
+
+            vim.lsp.config("pyright", {
+                settings = {
+                    python = {
+                        analysis = {
+                            autoSearchPaths = true,
+                            useLibraryCodeForTypes = true,
+                        },
+                    },
+                },
+            })
+            vim.lsp.enable("pyright")
+
+            vim.lsp.config("ruff", {
+                on_attach = function(client)
+                    client.server_capabilities.hoverProvider = false
+                end,
+            })
+            vim.lsp.enable("ruff")
         end,
     },
 }

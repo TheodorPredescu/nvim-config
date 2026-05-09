@@ -26,12 +26,11 @@ return {
         })
 
         vim.keymap.set("n", "<leader>w", function()
-            local conform = require("conform")
-            conform.format({
+            require("conform").format({
                 lsp_fallback = true,
                 async = false,
                 timeout_ms = 500,
             })
-        end, { buffer = bufnr, desc = "Format buffer" })
+        end, { desc = "Format buffer" })
     end,
 }
