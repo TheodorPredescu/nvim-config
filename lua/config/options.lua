@@ -45,7 +45,7 @@ if os_name == "Linux" then
 elseif os_name == "Windows_NT" then
     vim.bo.fileformat = "dos"
 
-    vim.opt.shell = "pwsh.exe"
+    vim.opt.shell = "powershell.exe"
 
     -- Optional: arguments to make it behave nicely in Neovim terminal
     vim.opt.shellcmdflag = "-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command"
