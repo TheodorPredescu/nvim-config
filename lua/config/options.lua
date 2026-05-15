@@ -41,6 +41,7 @@ vim.opt.undofile = true
 vim.opt.undodir = vim.fn.stdpath("data") .. "/undo//"
 vim.opt.undolevels = 500
 
+---@diagnostic disable-next-line: undefined-field
 local os_name = vim.loop.os_uname().sysname
 if os_name == "Linux" then
     vim.bo.fileformat = "unix"

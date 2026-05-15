@@ -26,7 +26,7 @@ return {
         })
 
         vim.keymap.set("n", "<leader>w", function()
-            require("conform").format({
+            conform.format({
                 lsp_fallback = true,
                 async = false,
                 timeout_ms = 500,

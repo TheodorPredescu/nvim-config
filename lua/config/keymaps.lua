@@ -7,7 +7,7 @@ vim.keymap.set("n", "<leader>*", function()
     vim.opt.hlsearch = true
 end, { desc = "Highlight word under cursor" })
 
-vim.keymap.set("n",'<leader>cb', "<cmd>%bd|e#<CR>", {desc = "Delete all but the current buffer"})
+vim.keymap.set("n", "<leader>bc", "<cmd>%bd|e#<CR>", { desc = "Delete all but the current buffer" })
 
 -- Make toggle terminal on <leader> t with history preserved.
 local term_buf = nil
@@ -42,3 +42,48 @@ vim.keymap.set("t", "<C-\\>", function()
 end, { desc = "Exit terminal mode" })
 vim.keymap.set("n", "<C-\\>", toggle_terminal, { desc = "Toggle terminal" })
 vim.keymap.set("n", "gbc", "<Esc>O */<Esc>O<Esc>I <Esc>O<Esc>I/*<Esc>jA ")
+
+local marginSize = 55
+local enabled = false
+local left_win = nil
+local right_win = nil
+
+vim.keymap.set("n", "<leader>up", function()
+    -- TOGGLE OFF (just close existing windows)
+    if enabled then
+        if vim.api.nvim_win_is_valid(left_win) then
+            vim.api.nvim_win_close(left_win, true)
+        end
+        if vim.api.nvim_win_is_valid(right_win) then
+            vim.api.nvim_win_close(right_win, true)
+        end
+
+        left_win, right_win = nil, nil
+        enabled = false
+        return
+    end
+
+    local main_win = vim.api.nvim_get_current_win()
+
+    -- LEFT
+    vim.cmd("topleft vsplit _______")
+    left_win = vim.api.nvim_get_current_win()
+    vim.api.nvim_win_set_width(left_win, marginSize)
+    vim.wo[left_win].winfixwidth = true
+    vim.api.nvim_win_set_buf(left_win, vim.api.nvim_get_current_buf())
+
+    -- RIGHT
+    vim.api.nvim_set_current_win(main_win)
+    vim.cmd("botright vsplit _______")
+    right_win = vim.api.nvim_get_current_win()
+    vim.api.nvim_win_set_width(right_win, marginSize)
+    vim.wo[right_win].winfixwidth = true
+    vim.api.nvim_win_set_buf(right_win, vim.api.nvim_get_current_buf())
+
+    vim.wo[left_win].statusline = " "
+    vim.wo[right_win].statusline = " "
+
+    vim.api.nvim_set_current_win(main_win)
+
+    enabled = true
+end)

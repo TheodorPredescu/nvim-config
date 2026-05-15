@@ -14,7 +14,7 @@ return {
                 builtin.find_files({ previewer = false, layout_strategy = "vertical", layout_config = { width = 0.6 } })
             end, { desc = "Telescope find files" })
             vim.keymap.set("n", "<leader>/", builtin.live_grep, { desc = "Telescope live grep" })
-            vim.keymap.set("n", "<leader>b", function()
+            vim.keymap.set("n", "<leader>bl", function()
                 builtin.buffers({
                     sort_mru = true,
                 })
