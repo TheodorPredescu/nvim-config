@@ -44,13 +44,12 @@ vim.keymap.set("n", "<C-\\>", toggle_terminal, { desc = "Toggle terminal" })
 vim.keymap.set("n", "gbc", "<Esc>O */<Esc>O<Esc>I <Esc>O<Esc>I/*<Esc>jA ")
 
 local marginSize = 55
-local enabled = false
 local left_win = nil
 local right_win = nil
 
 vim.keymap.set("n", "<leader>up", function()
     -- TOGGLE OFF (just close existing windows)
-    if enabled then
+    if left_win and right_win then
         if vim.api.nvim_win_is_valid(left_win) then
             vim.api.nvim_win_close(left_win, true)
         end
@@ -59,7 +58,6 @@ vim.keymap.set("n", "<leader>up", function()
         end
 
         left_win, right_win = nil, nil
-        enabled = false
         return
     end
 
@@ -84,6 +82,4 @@ vim.keymap.set("n", "<leader>up", function()
     vim.wo[right_win].statusline = " "
 
     vim.api.nvim_set_current_win(main_win)
-
-    enabled = true
 end)
