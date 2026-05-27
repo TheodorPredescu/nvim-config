@@ -33,6 +33,11 @@ return {
 			vim.keymap.set("n", "<leader>bl", function()
 				builtin.buffers({
 					sort_mru = true,
+					previewer = false,
+					layout_strategy = "vertical",
+					layout_config = {
+						width = 0.7,
+					},
 				})
 			end, { desc = "Telescope buffers" })
 			-- vim.keymap.set('n', 'gd', builtin.lsp_definitions, { desc = 'LSP Definitions' })
