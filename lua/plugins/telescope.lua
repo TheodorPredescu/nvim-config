@@ -10,6 +10,7 @@ return {
 		config = function()
 			-- Telescope commands
 			local builtin = require("telescope.builtin")
+
 			vim.keymap.set("n", "<leader>f", function()
 				builtin.find_files({
 					previewer = false,
@@ -28,6 +29,20 @@ return {
 							preview_width = 0.6,
 						},
 					},
+					path_display = function(_, path)
+						local parts = vim.split(path, "/")
+
+						if #parts <= 3 then
+							return path
+						end
+
+						return ".../"
+							.. table.concat({
+								parts[#parts - 2],
+								parts[#parts - 1],
+								parts[#parts],
+							}, "/")
+					end,
 				})
 			end, { desc = "Telescope live grep" })
 			vim.keymap.set("n", "<leader>bl", function()
