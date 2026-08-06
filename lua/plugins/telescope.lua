@@ -57,7 +57,17 @@ return {
 			end, { desc = "Telescope buffers" })
 			-- vim.keymap.set('n', 'gd', builtin.lsp_definitions, { desc = 'LSP Definitions' })
 			-- vim.keymap.set("n", "<leader>d", builtin.lsp_workspace_symbols, { desc = "LSP Workspace Symbols" })
-			vim.keymap.set("n", "gr", builtin.lsp_references, { desc = "LSP references" })
+			vim.keymap.set("n", "gr", function()
+				builtin.lsp_references({
+					layout_config = {
+						width = 0.9,
+						height = 0.9,
+						horizontal = {
+							preview_width = 0.6,
+						},
+					},
+				})
+			end, { desc = "LSP references" })
 			vim.keymap.set("n", "gi", builtin.lsp_implementations, { desc = "LSP implementation" })
 
 			-- vim.keymap.set('n', '<leader>th', builtin.help_tags, { desc = 'Telescope help tags' })
