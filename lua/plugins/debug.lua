@@ -14,20 +14,30 @@ return {
         require("nvim-dap-virtual-text").setup({
             enabled = true,
             enabled_commands = true,
+
             highlight_changed_variables = true,
-            highlight_new_as_changed = false,
+            highlight_new_as_changed = true,
+
             show_stop_reason = true,
             commented = false,
-            only_first_definition = true,
-            all_references = false,
-            clear_on_continue = false,
+
+            -- Display values beside every reference, not only the declaration.
+            only_first_definition = false,
+            all_references = true,
+
+            -- Remove stale values while the program is running.
+            clear_on_continue = true,
+
             virt_text_pos = "inline",
+
             display_callback = function(variable)
-                if #variable.value > 15 then
-                    return " = " .. string.sub(variable.value, 1, 15) .. "... "
+                local value = tostring(variable.value):gsub("%s+", " ")
+
+                if #value > 40 then
+                    value = value:sub(1, 40) .. "…"
                 end
 
-                return " = " .. variable.value
+                return " = " .. value
             end,
         })
 
@@ -81,7 +91,7 @@ return {
         })
 
         vim.fn.sign_define("DapBreakpointRejected", {
-            text = "●",
+            text = "○",
             texthl = "DapBreakpointRejected",
             linehl = "",
             numhl = "",
@@ -103,7 +113,7 @@ return {
 
         vim.api.nvim_set_hl(0, "DapBreakpoint", { fg = "#FF0000", bold = true }) -- Red
         vim.api.nvim_set_hl(0, "DapBreakpointCondition", { fg = "#FF8800", bold = true }) -- Orange
-        vim.api.nvim_set_hl(0, "DapBreakpointRejected", { fg = "#888888" }) -- Gray
+        vim.api.nvim_set_hl(0, "DapBreakpointRejected", { fg = "#FF0000" })
         vim.api.nvim_set_hl(0, "DapLogPoint", { fg = "#00CCFF" }) -- Blue
         vim.api.nvim_set_hl(0, "DapStopped", { fg = "#00FF00", bg = "#003300" })
 
