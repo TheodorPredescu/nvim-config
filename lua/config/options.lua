@@ -5,6 +5,11 @@ vim.opt.number = true
 -- vim.opt.relativenumber = true
 vim.opt.statuscolumn = "%s%l %=%#LineNr#▎"
 
+-- For :find
+vim.opt.path:append("**")
+vim.opt.wildmenu = true
+vim.opt.wildmode = "longest:full,full"
+
 vim.opt.ruler = true
 vim.opt.showmode = true
 vim.opt.hlsearch = true
