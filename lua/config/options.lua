@@ -38,9 +38,8 @@ vim.opt.clipboard = "unnamedplus"
 
 vim.opt.backup = false
 local swapDir = vim.fn.stdpath("state") .. "/swap"
-vim.opt.swapfile = true
-
 vim.opt.directory = swapDir .. "//"
+vim.opt.swapfile = false
 
 vim.opt.undofile = true
 vim.opt.undodir = vim.fn.stdpath("data") .. "/undo//"
