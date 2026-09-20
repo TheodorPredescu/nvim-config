@@ -13,6 +13,7 @@ return {
                 NormalFloat = { bg = "NONE" },
                 FloatBorder = { bg = "NONE" },
                 FloatTitle = { bg = "NONE" },
+                SignColumn = { bg = "NONE" },
 
                 MarginBackground = { bg = "#141617" },
             },
