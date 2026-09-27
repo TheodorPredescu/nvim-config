@@ -45,16 +45,16 @@ vim.opt.undolevels = 500
 
 local os_name = vim.loop.os_uname().sysname
 if os_name == "Linux" then
-	vim.bo.fileformat = "unix"
+    vim.bo.fileformat = "unix"
 elseif os_name == "Windows_NT" then
-	vim.bo.fileformat = "dos"
+    vim.bo.fileformat = "dos"
 
-	vim.opt.shell = "powershell.exe"
+    vim.opt.shell = "powershell.exe"
 
-	-- Optional: arguments to make it behave nicely in Neovim terminal
-	vim.opt.shellcmdflag = "-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command"
-	vim.opt.shellquote = ""
-	vim.opt.shellxquote = ""
+    -- Optional: arguments to make it behave nicely in Neovim terminal
+    vim.opt.shellcmdflag = "-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command"
+    vim.opt.shellquote = ""
+    vim.opt.shellxquote = ""
 end
 
 -- Some color costumization for vim marks
@@ -66,15 +66,15 @@ vim.api.nvim_set_hl(0, "SignatureMarkTextUpper", { fg = "#00ff00", bg = "NONE", 
 vim.api.nvim_set_hl(0, "SignatureMarkCurrentLine", { fg = "#ff00ff", bg = "NONE", bold = false })
 
 vim.diagnostic.config({
-	virtual_text = true, -- inline errors/warnings
-	severity_sort = true,
-	signs = true,
-	underline = true,
-	update_in_insert = true,
+    virtual_text = true, -- inline errors/warnings
+    severity_sort = true,
+    signs = true,
+    underline = true,
+    update_in_insert = true,
 })
 
 vim.pack.add({
-	"https://github.com/mason-org/mason.nvim",
+    "https://github.com/mason-org/mason.nvim",
 })
 
 require("mason").setup()
@@ -84,20 +84,20 @@ vim.o.autocomplete = true
 vim.lsp.enable({ "lua_ls", "pyright", "clangd", "ts_ls" })
 
 vim.api.nvim_create_autocmd("LspAttach", {
-	group = vim.api.nvim_create_augroup("lsp_completion", { clear = true }),
-	callback = function(args)
-		local client_id = args.data.client_id
-		if not client_id then
-			return
-		end
+    group = vim.api.nvim_create_augroup("lsp_completion", { clear = true }),
+    callback = function(args)
+        local client_id = args.data.client_id
+        if not client_id then
+            return
+        end
 
-		local client = vim.lsp.get_client_by_id(client_id)
-		if client and client:supports_method("textDocument/completion") then
-			vim.lsp.completion.enable(true, client_id, args.buf, {
-				autotrigger = true,
-			})
-		end
-	end,
+        local client = vim.lsp.get_client_by_id(client_id)
+        if client and client:supports_method("textDocument/completion") then
+            vim.lsp.completion.enable(true, client_id, args.buf, {
+                autotrigger = true,
+            })
+        end
+    end,
 })
 
 require("keymaps")
