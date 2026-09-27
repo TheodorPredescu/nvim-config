@@ -57,14 +57,6 @@ elseif os_name == "Windows_NT" then
     vim.opt.shellxquote = ""
 end
 
--- Some color costumization for vim marks
--- Normal marks '
-vim.api.nvim_set_hl(0, "SignatureMarkText", { fg = "#00ff00", bg = "NONE", bold = false })
--- Uppercase marks (A-Z)
-vim.api.nvim_set_hl(0, "SignatureMarkTextUpper", { fg = "#00ff00", bg = "NONE", bold = false })
--- Marks in the current line
-vim.api.nvim_set_hl(0, "SignatureMarkCurrentLine", { fg = "#ff00ff", bg = "NONE", bold = false })
-
 vim.diagnostic.config({
     virtual_text = true, -- inline errors/warnings
     severity_sort = true,
@@ -80,7 +72,7 @@ vim.pack.add({
 require("mason").setup()
 
 vim.opt.completeopt = "menu,menuone,noselect,popup"
-vim.o.autocomplete = true
+-- vim.o.autocomplete = true
 vim.lsp.enable({ "lua_ls", "pyright", "clangd", "ts_ls" })
 
 vim.api.nvim_create_autocmd("LspAttach", {
