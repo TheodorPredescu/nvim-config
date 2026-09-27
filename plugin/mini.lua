@@ -5,9 +5,6 @@ vim.pack.add({
 require("mini.icons").setup()
 require("mini.pairs").setup()
 
-local pick = require("mini.pick")
-pick.setup()
-
 local wide_picker = {
     window = {
         config = {
@@ -15,7 +12,8 @@ local wide_picker = {
         },
     },
 }
-
+local pick = require("mini.pick")
+pick.setup()
 vim.keymap.set("n", "<leader>f", function()
     pick.builtin.files({}, wide_picker)
 end)

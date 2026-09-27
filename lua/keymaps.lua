@@ -19,6 +19,8 @@ end, { desc = "Hover documentation" })
 vim.keymap.set("n", "gra", vim.lsp.buf.code_action, { desc = "Code actions" })
 vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition" })
 
+vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Code actions" })
+vim.keymap.set("n", "gra", vim.lsp.buf.code_action, { desc = "Code actions" })
 -- - "gra" (Normal and Visual mode) is mapped to |vim.lsp.buf.code_action()|
 -- - "gri" is mapped to |vim.lsp.buf.implementation()|
 -- - "grn" is mapped to |vim.lsp.buf.rename()|

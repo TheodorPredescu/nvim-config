@@ -44,6 +44,8 @@ vim.opt.undofile = true
 vim.opt.undodir = vim.fn.stdpath("data") .. "/undo//"
 vim.opt.undolevels = 500
 
+-- vim.o.winborder = "solid"
+
 local os_name = vim.loop.os_uname().sysname
 if os_name == "Linux" then
     vim.bo.fileformat = "unix"
@@ -79,7 +81,7 @@ vim.o.pumborder = "rounded"
 vim.api.nvim_set_hl(0, "PmenuBorder", { bg = "NONE", blend = 30 })
 vim.api.nvim_set_hl(0, "Pmenu", { bg = "NONE", blend = 30 })
 
-vim.lsp.enable({ "lua_ls", "pyright", "clangd", "ts_ls" })
+vim.lsp.enable({ "lua_ls", "pyright", "clangd", "ts_ls", "html", "css_ls", "angularls" })
 
 vim.api.nvim_create_autocmd("LspAttach", {
     group = vim.api.nvim_create_augroup("lsp_completion", { clear = true }),
@@ -95,6 +97,16 @@ vim.api.nvim_create_autocmd("LspAttach", {
                 autotrigger = true,
             })
         end
+
+        -- Angular and ts_ls try to rename bouth...
+        local angular_attached = #vim.lsp.get_clients({ bufnr = args.buf, name = "angularls" }) > 0
+        vim.keymap.set("n", "grn", function()
+            vim.lsp.buf.rename(nil, {
+                filter = function(rename_client)
+                    return not angular_attached or rename_client.name ~= "ts_ls"
+                end,
+            })
+        end, { buffer = args.buf, desc = "LSP rename" })
     end,
 })
 

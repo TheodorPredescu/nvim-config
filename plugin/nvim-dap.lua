@@ -47,7 +47,7 @@ if js_debugger ~= "" then
         host = "localhost",
         port = "${port}",
         executable = {
-            command = "js-debug-adapter",
+            command = "js-debug-adapter.cmd",
             args = { "${port}" },
         },
     }
@@ -65,9 +65,27 @@ if js_debugger ~= "" then
         {
             type = "pwa-chrome",
             request = "attach",
-            name = "Attach to to current page (Chrome)",
+            name = "Attach to current page (Chrome)",
             port = 9222,
             webRoot = "${workspaceFolder}",
+            sourceMaps = true,
+            trace = true,
+        },
+        {
+            type = "pwa-chrome",
+            request = "launch",
+            name = "Launch in new page mira",
+            url = "http://localhost:4200",
+            webRoot = "${workspaceFolder}/frontend",
+            sourceMaps = true,
+            trace = true,
+        },
+        {
+            type = "pwa-chrome",
+            request = "attach",
+            name = "Attach to current mira page (Chrome)",
+            port = 9222,
+            webRoot = "${workspaceFolder}/frontend",
             sourceMaps = true,
             trace = true,
         },
