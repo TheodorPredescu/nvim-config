@@ -7,6 +7,7 @@ vim.opt.statuscolumn = "  %s%l %=%#LineNr#▎"
 
 -- For :find
 vim.opt.path:append("**")
+vim.opt.wildignore:append({ "**/node_modules/**", "**/venv/**", "**/.venv/**" })
 vim.opt.wildmenu = true
 vim.opt.wildmode = "longest:full,full"
 

@@ -7,7 +7,7 @@ local snacks = require("snacks")
 snacks.setup({
     picker = {
         enabled = true,
-        ui_select = true,
+        ui_select = false,
         live = true,
         layout = {
             select = {

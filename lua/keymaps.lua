@@ -3,7 +3,8 @@ vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
 
 vim.keymap.set("n", "K", vim.lsp.buf.hover, { desc = "Hover documentation" })
 vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, { desc = "Hover documentation" })
--- vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "Code actions" })
+vim.keymap.set("n", "gra", vim.lsp.buf.code_action, { desc = "Code actions" })
+vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition" })
 
 -- - "gra" (Normal and Visual mode) is mapped to |vim.lsp.buf.code_action()|
 -- - "gri" is mapped to |vim.lsp.buf.implementation()|
