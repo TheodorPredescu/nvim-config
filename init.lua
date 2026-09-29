@@ -72,8 +72,13 @@ vim.pack.add({
 
 require("mason").setup()
 
-vim.opt.completeopt = "menu,menuone,noselect,popup"
--- vim.o.autocomplete = true
+vim.o.complete = ".,w,b,o"
+vim.opt.completeopt = "menuone,noselect,fuzzy"
+vim.o.pumheight = 10 -- max number of options displayed
+vim.o.pumborder = "rounded"
+vim.api.nvim_set_hl(0, "PmenuBorder", { bg = "NONE", blend = 30 })
+vim.api.nvim_set_hl(0, "Pmenu", { bg = "NONE", blend = 30 })
+
 vim.lsp.enable({ "lua_ls", "pyright", "clangd", "ts_ls" })
 
 vim.api.nvim_create_autocmd("LspAttach", {

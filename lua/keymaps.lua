@@ -1,8 +1,21 @@
 vim.keymap.set("n", "<C-c>", "<cmd>nohlsearch<CR>")
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
 
-vim.keymap.set("n", "K", vim.lsp.buf.hover, { desc = "Hover documentation" })
-vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, { desc = "Hover documentation" })
+local hover_config = {
+    border = "rounded",
+    offset_x = 1,
+    offset_y = 1,
+}
+vim.keymap.set("n", "K", function()
+    vim.lsp.buf.hover(hover_config)
+end, { desc = "Hover documentation" })
+vim.keymap.set("n", "<C-k>", function()
+    vim.lsp.buf.signature_help(hover_config)
+end, { desc = "Hover documentation" })
+vim.keymap.set("i", "<C-s>", function()
+    vim.lsp.buf.signature_help(hover_config)
+end, { desc = "Hover documentation" })
+
 vim.keymap.set("n", "gra", vim.lsp.buf.code_action, { desc = "Code actions" })
 vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to definition" })
 
