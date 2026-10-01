@@ -61,11 +61,14 @@ elseif os_name == "Windows_NT" then
 end
 
 vim.diagnostic.config({
-    virtual_text = true, -- inline errors/warnings
-    severity_sort = true,
-    signs = true,
-    underline = true,
-    update_in_insert = true,
+    virtual_text = false, -- inline errors/warnings
+    -- virtual_lines = {
+    --     current_line = true, -- Only show virtual lines for the current cursor line
+    -- },
+    -- severity_sort = true,
+    -- signs = true,
+    -- underline = true,
+    -- update_in_insert = true,
 })
 
 vim.pack.add({
