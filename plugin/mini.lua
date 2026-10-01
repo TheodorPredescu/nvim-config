@@ -3,7 +3,7 @@ vim.pack.add({
 })
 
 require("mini.icons").setup()
-require("mini.pairs").setup()
+-- require("mini.pairs").setup()
 
 local wide_picker = {
     window = {

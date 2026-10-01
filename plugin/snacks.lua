@@ -9,6 +9,15 @@ snacks.setup({
         enabled = true,
         ui_select = false,
         live = true,
+
+        win = {
+            input = {
+                bo = {
+                    autocomplete = false,
+                },
+            },
+        },
+
         layout = {
             select = {
                 layout = "ivy",

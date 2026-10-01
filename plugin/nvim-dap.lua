@@ -47,7 +47,7 @@ if js_debugger ~= "" then
         host = "localhost",
         port = "${port}",
         executable = {
-            command = "js-debug-adapter.cmd",
+            command = "js-debug-adapter",
             args = { "${port}" },
         },
     }

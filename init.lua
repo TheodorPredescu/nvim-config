@@ -30,7 +30,7 @@ vim.opt.autoindent = true
 vim.opt.smartindent = false
 
 vim.opt.scrolloff = 4
-vim.opt.wrap = false
+vim.opt.wrap = true
 vim.opt.textwidth = 120
 vim.opt.colorcolumn = "120"
 
@@ -74,12 +74,22 @@ vim.pack.add({
 
 require("mason").setup()
 
-vim.o.complete = ".,w,b,o"
+local function setupColors()
+    vim.api.nvim_set_hl(0, "PmenuBorder", { bg = "NONE", blend = 30 })
+    vim.api.nvim_set_hl(0, "Pmenu", { bg = "NONE", blend = 30 })
+end
+vim.api.nvim_create_autocmd("ColorScheme", {
+    group = vim.api.nvim_create_augroup("custom_menu_highlights", { clear = true }),
+    pattern = "*",
+    callback = setupColors,
+})
+setupColors()
+
+vim.o.complete = "o"
 vim.opt.completeopt = "menuone,noselect,fuzzy"
 vim.o.pumheight = 10 -- max number of options displayed
 vim.o.pumborder = "rounded"
-vim.api.nvim_set_hl(0, "PmenuBorder", { bg = "NONE", blend = 30 })
-vim.api.nvim_set_hl(0, "Pmenu", { bg = "NONE", blend = 30 })
+vim.o.autocomplete = false
 
 vim.lsp.enable({ "lua_ls", "pyright", "clangd", "ts_ls", "html", "css_ls", "angularls" })
 
@@ -100,13 +110,17 @@ vim.api.nvim_create_autocmd("LspAttach", {
 
         -- Angular and ts_ls try to rename bouth...
         local angular_attached = #vim.lsp.get_clients({ bufnr = args.buf, name = "angularls" }) > 0
-        vim.keymap.set("n", "grn", function()
-            vim.lsp.buf.rename(nil, {
-                filter = function(rename_client)
-                    return not angular_attached or rename_client.name ~= "ts_ls"
-                end,
-            })
-        end, { buffer = args.buf, desc = "LSP rename" })
+        if angular_attached then
+            for _, ts_client in
+                ipairs(vim.lsp.get_clients({
+                    bufnr = args.buf,
+                    name = "ts_ls",
+                }))
+            do
+                ts_client.server_capabilities.renameProvider = false
+                ts_client.server_capabilities.referencesProvider = false
+            end
+        end
     end,
 })
 

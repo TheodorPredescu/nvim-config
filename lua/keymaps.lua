@@ -1,11 +1,7 @@
 vim.keymap.set("n", "<C-c>", "<cmd>nohlsearch<CR>")
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
 
-local hover_config = {
-    border = "rounded",
-    offset_x = 1,
-    offset_y = 1,
-}
+local hover_config = { border = "rounded" }
 vim.keymap.set("n", "K", function()
     vim.lsp.buf.hover(hover_config)
 end, { desc = "Hover documentation" })
