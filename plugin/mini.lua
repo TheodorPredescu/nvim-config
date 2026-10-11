@@ -15,7 +15,7 @@ local wide_picker = {
 local pick = require("mini.pick")
 pick.setup()
 vim.keymap.set("n", "<leader>f", function()
-    pick.builtin.files({}, wide_picker)
+    pick.builtin.files({ tool = "fd" }, wide_picker)
 end)
 
 vim.keymap.set("n", "<leader>bl", function()

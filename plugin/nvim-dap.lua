@@ -47,7 +47,7 @@ if js_debugger ~= "" then
         host = "localhost",
         port = "${port}",
         executable = {
-            command = "js-debug-adapter",
+            command = vim.fn.has("win32") == 1 and "js-debug-adapter.cmd" or "js-debug-adapter",
             args = { "${port}" },
         },
     }

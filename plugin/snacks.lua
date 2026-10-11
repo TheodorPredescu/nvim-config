@@ -62,5 +62,5 @@ vim.keymap.set("n", "<leader>e", function()
 end, { desc = "Find files" })
 
 vim.keymap.set("n", "<leader>/", function()
-    snacks.picker.grep()
+    snacks.picker.grep({ limit_live = 1000 }) -- used for faster response, If what I search has more then 1000 appearences, I am searching it wrong
 end)
