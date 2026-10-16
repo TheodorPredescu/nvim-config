@@ -21,3 +21,21 @@ end)
 vim.keymap.set("n", "<leader>bl", function()
     pick.builtin.buffers({}, wide_picker)
 end, { desc = "Buffers" })
+
+require("mini.animate").setup(
+{
+
+  scroll = {
+    enable = true,
+
+    timing = require("mini.animate").gen_timing.linear({
+        duration = 100,
+        unit = "total",
+    }),
+  },
+
+  cursor = { enable = false },
+  resize = { enable = false },
+  open = { enable = false },
+  close = { enable = false },
+})

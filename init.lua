@@ -52,11 +52,11 @@ if os_name == "Linux" then
 elseif os_name == "Windows_NT" then
     vim.bo.fileformat = "dos"
 
-    vim.opt.shell = "powershell.exe"
+    vim.bo.fileformat = "dos"
 
-    -- Optional: arguments to make it behave nicely in Neovim terminal
-    vim.opt.shellcmdflag = "-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command"
-    vim.opt.shellquote = ""
+    vim.opt.shell = "cmd.exe"
+    vim.opt.shellcmdflag = "/s /c"
+    vim.opt.shellquote = '"'
     vim.opt.shellxquote = ""
 end
 
@@ -107,7 +107,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
         local client = vim.lsp.get_client_by_id(client_id)
         if client and client:supports_method("textDocument/completion") then
             vim.lsp.completion.enable(true, client_id, args.buf, {
-                autotrigger = true,
+                autotrigger = false,
             })
         end
 
@@ -128,3 +128,28 @@ vim.api.nvim_create_autocmd("LspAttach", {
 })
 
 require("keymaps")
+
+
+
+-- Neovide specific
+vim.g.neovide_cursor_animation_length = 0
+vim.g.neovide_cursor_animate_in_insert_mode = false
+vim.g.neovide_cursor_animate_command_line = false
+-- init.lua
+vim.o.guifont = "Inconsolata LGC Nerd Font:h14"
+
+
+vim.g.neovide_scale_factor = 1.0
+
+vim.keymap.set("n", "<C-=>", function()
+    vim.g.neovide_scale_factor = vim.g.neovide_scale_factor + 0.1
+end)
+
+vim.keymap.set("n", "<C-->", function()
+    vim.g.neovide_scale_factor = vim.g.neovide_scale_factor - 0.1
+end)
+
+vim.keymap.set("n", "<C-0>", function()
+    vim.g.neovide_scale_factor = 1.0
+end)
+--
