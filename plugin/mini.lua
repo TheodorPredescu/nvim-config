@@ -22,16 +22,38 @@ vim.keymap.set("n", "<leader>bl", function()
     pick.builtin.buffers({}, wide_picker)
 end, { desc = "Buffers" })
 
-require("mini.animate").setup(
+local animate = require("mini.animate")
+local mouse_scrolled = false
+
+for _, direction in ipairs({ "Up", "Down" }) do
+    local key = "<ScrollWheel" .. direction .. ">"
+
+    vim.keymap.set({ "", "i" }, key, function()
+        mouse_scrolled = true
+        return key
+    end, { expr = true })
+end
+
+animate.setup(
 {
 
   scroll = {
     enable = true,
 
-    timing = require("mini.animate").gen_timing.linear({
+    timing = animate.gen_timing.linear({
         duration = 100,
         unit = "total",
     }),
+    subscroll = animate.gen_subscroll.equal({
+         predicate = function(total_scroll)
+             if mouse_scrolled then
+                 mouse_scrolled = false
+                 return false
+             end
+
+             return total_scroll > 1
+         end,
+     }),
   },
 
   cursor = { enable = false },
