@@ -41,7 +41,7 @@ animate.setup(
     enable = true,
 
     timing = animate.gen_timing.linear({
-        duration = 100,
+        duration = 25,
         unit = "total",
     }),
     subscroll = animate.gen_subscroll.equal({
@@ -60,4 +60,32 @@ animate.setup(
   resize = { enable = false },
   open = { enable = false },
   close = { enable = false },
+})
+
+local highlighters = {}
+
+local keywords = {
+    TODO = "Todo",
+    FIXME = "Fixme",
+    FIX = "Fixme",
+    BUG = "Fixme",
+    HACK = "Hack",
+    WARN = "Hack",
+    WARNING = "Hack",
+    NOTE = "Note",
+    INFO = "Note",
+    PERF = "Note",
+    OPTIMIZE = "Note",
+    XXX = "Hack",
+}
+
+for keyword, group in pairs(keywords) do
+    highlighters[keyword:lower()] = {
+        pattern = "%f[%w]()" .. keyword .. "()%f[%W]",
+        group = "MiniHipatterns" .. group,
+    }
+end
+
+require("mini.hipatterns").setup({
+    highlighters = highlighters,
 })
