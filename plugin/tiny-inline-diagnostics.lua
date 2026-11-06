@@ -64,8 +64,8 @@ require("tiny-inline-diagnostic").setup({
 
         -- Settings for multiline diagnostics
         multilines = {
-            enabled = true, -- Enable support for multiline diagnostic messages
-            always_show = true, -- Always show messages on all lines of multiline diagnostics
+            enabled = false, -- Enable support for multiline diagnostic messages
+            always_show = false, -- Always show messages on all lines of multiline diagnostics
             trim_whitespaces = false, -- Remove leading/trailing whitespace from each line
             tabstop = 4, -- Number of spaces per tab when expanding tabs
             -- Restrict which severities are shown on non-cursor lines
@@ -96,7 +96,7 @@ require("tiny-inline-diagnostic").setup({
         -- Handle messages that exceed the window width
         overflow = {
             mode = "wrap", -- "wrap": split into lines, "none": no truncation, "oneline": keep single line
-            padding = 5, -- Extra characters to trigger wrapping earlier
+            padding = 10, -- Extra characters to trigger wrapping earlier
         },
 
         -- Break long messages into separate lines

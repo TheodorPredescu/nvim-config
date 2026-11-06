@@ -12,4 +12,21 @@ return {
         "package.json",
         ".git",
     },
+    init_options = {
+        supportsHoverVerbosity = true,
+        preferences = {
+            maximumHoverLength = 10000,
+        },
+        tsserver = {
+            path = vim.fs.joinpath(
+                vim.fn.stdpath("data"),
+                "mason",
+                "packages",
+                "typescript-language-server",
+                "node_modules",
+                "typescript",
+                "lib"
+            ),
+        },
+    },
 }

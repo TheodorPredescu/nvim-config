@@ -41,7 +41,7 @@ animate.setup(
     enable = true,
 
     timing = animate.gen_timing.linear({
-        duration = 25,
+        duration = 35,
         unit = "total",
     }),
     subscroll = animate.gen_subscroll.equal({

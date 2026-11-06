@@ -2,7 +2,7 @@ vim.g.mapleader = " "
 vim.g.maplocalleader = "\\"
 
 vim.opt.number = true
-vim.opt.relativenumber = true
+vim.opt.relativenumber = false
 vim.opt.statuscolumn = "  %s%l %=%#LineNr#▎"
 
 -- For :find
@@ -30,7 +30,7 @@ vim.opt.autoindent = true
 vim.opt.smartindent = false
 
 vim.opt.scrolloff = 4
-vim.opt.wrap = true
+vim.opt.wrap = false
 vim.opt.textwidth = 120
 vim.opt.colorcolumn = "120"
 
