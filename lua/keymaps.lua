@@ -94,3 +94,5 @@ vim.keymap.set("n", "<leader>qs", function()
         print("No session found for this directory")
     end
 end, { desc = "Load session (cwd)" })
+
+vim.keymap.set("n", "<leader>c", "<cmd>cclose<CR>")
